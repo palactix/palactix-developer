@@ -3,7 +3,8 @@ export type LoginInput = {
   password: string;
 };
 
+export type AuthUser = Record<string, unknown> | null;
+
 export type LoginResponse = {
-  access_token: string;
-  expires_in: number;
+  user: AuthUser;
 };

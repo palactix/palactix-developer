@@ -4,8 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { Toaster } from "sonner";
 
-import { AuthInitializer } from "@/providers/auth-initializer";
-
 type QueryProviderProps = {
   children: ReactNode;
 };
@@ -29,7 +27,7 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthInitializer>{children}</AuthInitializer>
+      {children}
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );

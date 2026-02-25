@@ -1,10 +1,8 @@
-import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "@/lib/constants";
+import { REQUEST_TIMEOUT_MS } from "@/lib/constants";
 import { ApiError, AuthError, RateLimitError, normalizeError } from "@/lib/errors";
-import { useAuthStore } from "@/stores/auth-store";
 
-type ApiClientOptions = Omit<RequestInit, "headers"> & {
+type ApiClientOptions = Omit<RequestInit, "headers" | "credentials"> & {
   headers?: HeadersInit;
-  skipAuthRetry?: boolean;
 };
 
 const parseResponseBody = async (response: Response): Promise<unknown> => {
@@ -25,12 +23,26 @@ const createHeaders = (headers?: HeadersInit): Headers => {
   return nextHeaders;
 };
 
-const buildUrl = (path: string): string => {
-  if (!API_BASE_URL) {
-    throw new ApiError("Missing NEXT_PUBLIC_API_BASE_URL", 500);
+const normalizePath = (path: string): string => {
+  if (!path) {
+    return "/";
   }
 
-  return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  return path.startsWith("/") ? path : `/${path}`;
+};
+
+const buildApiUrl = (path: string): string => {
+  const normalizedPath = normalizePath(path);
+
+  if (normalizedPath.startsWith("/api/")) {
+    return normalizedPath;
+  }
+
+  if (normalizedPath.startsWith("/auth/")) {
+    return `/api${normalizedPath}`;
+  }
+
+  return `/api${normalizedPath}`;
 };
 
 const toApiError = (status: number, payload: unknown, retryAfterHeader?: string | null): Error => {
@@ -54,46 +66,31 @@ const toApiError = (status: number, payload: unknown, retryAfterHeader?: string 
 };
 
 export const apiClient = async <T>(path: string, options: ApiClientOptions = {}): Promise<T> => {
-  const { headers, skipAuthRetry = false, ...restOptions } = options;
+  const { headers, ...restOptions } = options;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
     controller.abort();
   }, REQUEST_TIMEOUT_MS);
 
   try {
-    const authState = useAuthStore.getState();
     const requestHeaders = createHeaders(headers);
 
     if (restOptions.body && !(restOptions.body instanceof FormData) && !requestHeaders.has("Content-Type")) {
       requestHeaders.set("Content-Type", "application/json");
     }
 
-    if (authState.accessToken) {
-      requestHeaders.set("Authorization", `Bearer ${authState.accessToken}`);
-    }
-
-    const response = await fetch(buildUrl(path), {
+    const response = await fetch(buildApiUrl(path), {
       ...restOptions,
       headers: requestHeaders,
       credentials: "include",
       signal: controller.signal,
     });
 
-    if (response.status === 401 && !skipAuthRetry) {
-      const refreshed = await useAuthStore.getState().attemptSilentRefresh();
-      if (refreshed) {
-        return apiClient<T>(path, {
-          ...options,
-          skipAuthRetry: true,
-        });
-      }
-
-      useAuthStore.getState().clearAccessToken();
-      throw new AuthError("Session expired. Please login again.", 401);
-    }
-
     const payload = await parseResponseBody(response);
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new AuthError("Session expired. Please login again.", 401, payload);
+      }
       throw toApiError(response.status, payload, response.headers.get("retry-after"));
     }
 

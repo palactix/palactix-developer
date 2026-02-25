@@ -1,21 +1,21 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { getErrorMessage } from "@/lib/errors";
 import { notify } from "@/shared/notifications/notifier";
-import { useAuthStore } from "@/stores/auth-store";
 
+import type { AuthUser, LoginInput } from "./types";
 import { loginRequest } from "./api";
-import type { LoginInput } from "./types";
 
 export const useLogin = () => {
-  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const [user, setUser] = useState<AuthUser>(null);
 
   const mutation = useMutation({
     mutationFn: (input: LoginInput) => loginRequest(input),
     onSuccess: (data) => {
-      setAccessToken(data.access_token, data.expires_in);
+      setUser(data.user);
       notify.success("Logged in successfully");
     },
     onError: (error) => {
@@ -28,5 +28,6 @@ export const useLogin = () => {
     isPending: mutation.isPending,
     error: mutation.error,
     isSuccess: mutation.isSuccess,
+    user,
   };
 };
