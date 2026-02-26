@@ -2,10 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { getErrorMessage } from "@/lib/errors";
 import { useLogin } from "./hook";
 import type { LoginInput } from "./types";
 import { loginSchema } from "./rules";
+import {
+  isUnverifiedEmailError,
+  useResendCooldown,
+  useResendVerificationEmail,
+} from "@/features/auth/verify-email";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,9 +21,26 @@ import Link from "next/link";
 
 export const LoginForm = () => {
   const { mutate, isPending, error } = useLogin();
+  const [submittedEmail, setSubmittedEmail] = useState("");
+
+  const { canResend, secondsLeft, startCooldown } = useResendCooldown();
+  const { resend, isPending: isResendPending } = useResendVerificationEmail({
+    onSuccess: startCooldown,
+  });
+
+  const showResendVerification = isUnverifiedEmailError(error) && Boolean(submittedEmail);
 
   const onSubmit = (values: LoginInput) => {
+    setSubmittedEmail(values.email);
     mutate(values);
+  };
+
+  const handleResendVerification = async () => {
+    if (!showResendVerification || !canResend || isResendPending) {
+      return;
+    }
+
+    await resend({ email: submittedEmail });
   };
 
   const {
@@ -51,11 +74,32 @@ export const LoginForm = () => {
         <FormMessage>{errors.password?.message}</FormMessage>
       </div>
 
-      {error ? <p role="alert">{getErrorMessage(error, "Unable to login")}</p> : null}
-
       <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" size="lg" disabled={isPending}>
         {isPending ? "Signing in..." : "Sign In"}
       </Button>
+
+      {error && !showResendVerification ? (
+        <p className="text-sm text-destructive">{getErrorMessage(error, "Unable to login")}</p>
+      ) : null}
+
+      {showResendVerification ? (
+        <div className="space-y-2">
+          <p className="text-sm text-amber-600">Your email is not verified.</p>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleResendVerification}
+            disabled={!canResend || isResendPending}
+          >
+            {isResendPending
+              ? "Sending..."
+              : canResend
+                ? "Resend verification email"
+                : `Resend in ${secondsLeft}s`}
+          </Button>
+        </div>
+      ) : null}
     </form>
   );
 };

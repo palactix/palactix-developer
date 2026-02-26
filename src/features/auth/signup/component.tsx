@@ -9,6 +9,7 @@ import type { SignupFormValues, SignupType } from "./types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { FormMessage } from "@/components/shared/FormMessage";
+import { Button } from "@/components/ui/button";
 
 type SignupFormProps = {
   type: SignupType;
@@ -62,9 +63,9 @@ export const SignupForm = ({ type }: SignupFormProps) => {
         <FormMessage>{errors.password?.message}</FormMessage>
       </div>
 
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Creating account..." : "Create account"}
-      </button>
+      <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" size="lg" disabled={isPending}>
+        {isPending ? "Creating account..." : "Start 14-Day Evaluation"}
+      </Button>
     </form>
   );
 };
