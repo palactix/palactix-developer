@@ -16,11 +16,15 @@ type UseSignupReturn = {
 
 export const useSignup = (type: SignupType): UseSignupReturn => {
   const mutation = useMutation<SignupResponse, Error, SignupFormValues>({
-    mutationFn: (values) =>
-      signupRequest({
-        ...values,
+    mutationFn: (values) => {
+      const { agreeToByok, ...payload } = values;
+      void agreeToByok;
+
+      return signupRequest({
+        ...payload,
         type,
-      }),
+      });
+    },
     onSuccess: () => {
       notify.success("Account created successfully");
     },

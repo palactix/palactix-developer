@@ -7,7 +7,12 @@ export type SignupInput = {
   type: SignupType;
 };
 
-export type SignupFormValues = Omit<SignupInput, "type">;
+export type SignupFormValues = {
+  name: string;
+  email: string;
+  password: string;
+  agreeToByok: boolean;
+};
 
 export type SignupResponse = {
   status: true;
