@@ -4,7 +4,6 @@ import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 
-import { VERIFY_EMAIL_DESCRIPTION, VERIFY_EMAIL_TITLE } from "../constants";
 import { useResendCooldown, useResendVerificationEmail } from "../hooks";
 
 export const VerifyEmailPage = () => {

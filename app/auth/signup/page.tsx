@@ -1,4 +1,5 @@
 import { AuthCard } from "@/components/ui/auth/AuthCard";
+import { loginRoute } from "@/features/auth/login";
 import { SignupForm } from "@/features/auth/signup/component";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -24,7 +25,7 @@ export default function SignupPage() {
       </p>
       <p className="text-center mt-6 text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/auth/login" className="text-primary font-semibold hover:underline">
+        <Link href={loginRoute} className="text-primary font-semibold hover:underline">
           Sign in
         </Link>
       </p>
