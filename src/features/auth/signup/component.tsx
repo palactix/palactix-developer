@@ -1,10 +1,15 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { useSignup } from "./hook";
-import { signupRules } from "./rules";
+import { signupSchema } from "./rules";
 import type { SignupFormValues, SignupType } from "./types";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { FormMessage } from "@/components/shared/FormMessage";
+import { Button } from "@/components/ui/button";
 
 type SignupFormProps = {
   type: SignupType;
@@ -18,6 +23,7 @@ export const SignupForm = ({ type }: SignupFormProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -26,38 +32,40 @@ export const SignupForm = ({ type }: SignupFormProps) => {
   });
 
   return (
-    <form onSubmit={handleSubmit(submit)} noValidate>
-      <div>
-        <label htmlFor="signup-name">Name</label>
-        <input id="signup-name" type="text" autoComplete="name" {...register("name", signupRules.name)} />
-        {errors.name?.message ? <p role="alert">{errors.name.message}</p> : null}
+    <form className="space-y-6" onSubmit={handleSubmit(submit)} noValidate>
+      <div className="space-y-2">
+        <Label htmlFor="signup-name">Name</Label>
+        <Input id="signup-name" type="text"  placeholder="Acme Digital Agency" autoComplete="name" {...register("name")} />
+        <FormMessage>{errors.name?.message}</FormMessage>
       </div>
 
-      <div>
-        <label htmlFor="signup-email">Email</label>
-        <input
+     <div className="space-y-2">
+        <Label htmlFor="signup-email">Email</Label>
+        <Input
           id="signup-email"
           type="email"
           autoComplete="email"
-          {...register("email", signupRules.email)}
+           placeholder="you@agency.com" 
+          {...register("email")}
         />
-        {errors.email?.message ? <p role="alert">{errors.email.message}</p> : null}
+        <FormMessage>{errors.email?.message}</FormMessage>
       </div>
 
-      <div>
-        <label htmlFor="signup-password">Password</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="signup-password">Password</Label>
+        <Input
           id="signup-password"
           type="password"
           autoComplete="new-password"
-          {...register("password", signupRules.password)}
+          placeholder="Create a strong password"
+          {...register("password")}
         />
-        {errors.password?.message ? <p role="alert">{errors.password.message}</p> : null}
+        <FormMessage>{errors.password?.message}</FormMessage>
       </div>
 
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Creating account..." : "Create account"}
-      </button>
+      <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" size="lg" disabled={isPending}>
+        {isPending ? "Creating account..." : "Start 14-Day Evaluation"}
+      </Button>
     </form>
   );
 };

@@ -41,7 +41,7 @@ export const POST = async (request: Request): Promise<NextResponse> => {
 
   if (!upstreamResponse.ok) {
     return NextResponse.json(
-      { message: payload.message ?? "Login failed" },
+      payload,
       { status: upstreamResponse.status },
     );
   }

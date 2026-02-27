@@ -1,30 +1,46 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
+import { useState } from "react";
 import { getErrorMessage } from "@/lib/errors";
-
 import { useLogin } from "./hook";
 import type { LoginInput } from "./types";
+import { loginSchema } from "./rules";
+import {
+  isUnverifiedEmailError,
+  useResendCooldown,
+  useResendVerificationEmail,
+} from "@/features/auth/verify-email";
 
-const loginRules = {
-  email: {
-    required: "Email is required",
-    pattern: {
-      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-      message: "Enter a valid email address",
-    },
-  },
-  password: {
-    required: "Password is required",
-  },
-} as const;
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/shared/FormMessage";
+import Link from "next/link";
 
 export const LoginForm = () => {
   const { mutate, isPending, error } = useLogin();
+  const [submittedEmail, setSubmittedEmail] = useState("");
+
+  const { canResend, secondsLeft, startCooldown } = useResendCooldown();
+  const { resend, isPending: isResendPending } = useResendVerificationEmail({
+    onSuccess: startCooldown,
+  });
+
+  const showResendVerification = isUnverifiedEmailError(error) && Boolean(submittedEmail);
 
   const onSubmit = (values: LoginInput) => {
+    setSubmittedEmail(values.email);
     mutate(values);
+  };
+
+  const handleResendVerification = async () => {
+    if (!showResendVerification || !canResend || isResendPending) {
+      return;
+    }
+
+    await resend({ email: submittedEmail });
   };
 
   const {
@@ -32,6 +48,7 @@ export const LoginForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -39,29 +56,50 @@ export const LoginForm = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <div>
-        <label htmlFor="login-email">Email</label>
-        <input id="login-email" type="email" autoComplete="email" {...register("email", loginRules.email)} />
-        {errors.email?.message ? <p role="alert">{errors.email.message}</p> : null}
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input id="email" type="email" placeholder="you@agency.com" {...register("email")} />
+        <FormMessage>{errors.email?.message}</FormMessage>
       </div>
 
-      <div>
-        <label htmlFor="login-password">Password</label>
-        <input
-          id="login-password"
-          type="password"
-          autoComplete="current-password"
-          {...register("password", loginRules.password)}
-        />
-        {errors.password?.message ? <p role="alert">{errors.password.message}</p> : null}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+            Forgot password?
+          </Link>
+        </div>
+        <Input id="password" type="password" placeholder="Enter your password" {...register("password")} />
+        <FormMessage>{errors.password?.message}</FormMessage>
       </div>
 
-      {error ? <p role="alert">{getErrorMessage(error, "Unable to login")}</p> : null}
+      <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" size="lg" disabled={isPending}>
+        {isPending ? "Signing in..." : "Sign In"}
+      </Button>
 
-      <button type="submit" disabled={isPending}>
-        {isPending ? "Signing in..." : "Sign in"}
-      </button>
+      {error && !showResendVerification ? (
+        <p className="text-sm text-destructive">{getErrorMessage(error, "Unable to login")}</p>
+      ) : null}
+
+      {showResendVerification ? (
+        <div className="space-y-2">
+          <p className="text-sm text-amber-600">Your email is not verified.</p>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleResendVerification}
+            disabled={!canResend || isResendPending}
+          >
+            {isResendPending
+              ? "Sending..."
+              : canResend
+                ? "Resend verification email"
+                : `Resend in ${secondsLeft}s`}
+          </Button>
+        </div>
+      ) : null}
     </form>
   );
 };
