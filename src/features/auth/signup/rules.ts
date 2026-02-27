@@ -9,4 +9,7 @@ export const signupSchema = z.object({
     .string()
     .min(1, "Password is required")
     .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
+  agreeToByok: z.boolean().refine((value) => value, {
+    message: "You must acknowledge the BYOK requirement to continue.",
+  }),
 });

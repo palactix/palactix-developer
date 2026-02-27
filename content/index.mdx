@@ -1,0 +1,107 @@
+---
+title: Introduction
+description: Overview of the Palactix unified social API and white-label infrastructure for agencies and developers.
+---
+
+# Introduction
+
+**Palactix** is a unified social publishing infrastructure designed for agencies and developers.
+
+It provides a single API layer for managing social accounts and publishing content — along with an optional white-label scheduler built on top of that same API.
+
+Palactix is API-first.  
+The scheduler is simply one implementation of it.
+
+---
+
+## Two Ways to Use Palactix
+
+Palactix can be used in two different ways, depending on your needs.
+
+### As a Unified API (For Developers)
+
+Developers can integrate directly with the Palactix API to:
+
+- Build custom scheduling tools
+- Create internal dashboards
+- Power automation workflows
+- Enable AI-driven publishing
+- Integrate social publishing into existing systems
+
+The API provides a consistent interface across supported platforms, allowing you to manage accounts and publish content without building separate integrations for each provider.
+
+---
+
+### As a White-Label Scheduler (For Agencies)
+
+Agencies can use the built-in scheduler to:
+
+- Manage multiple clients
+- Handle team workflows
+- Publish across platforms
+- Operate under custom domains
+- Maintain workspace isolation
+
+The scheduler uses the same unified API available to developers.  
+There is no separate internal system.
+
+---
+
+## The BYO (Bring Your Own) OAuth Model
+
+Palactix does not provide shared platform application credentials.
+
+Instead, each developer or agency connects their own platform applications (for example, Meta, LinkedIn, or other supported providers).
+
+This means:
+
+- You retain control of your platform apps.
+- You control your API keys.
+- Your connections are not tied to a shared Palactix application.
+- You reduce vendor-level lock-in.
+
+Palactix manages the orchestration and infrastructure —  
+you control the platform credentials.
+
+A detailed explanation of this model is available in the [Authentication & Ownership](/docs/auth) section.
+
+---
+
+## Architecture Overview
+
+At a high level, Palactix consists of:
+
+- A unified API layer
+- App-based authentication and permission control
+- Multi-tenant workspace isolation
+- Event logging and observability
+- An optional scheduler built on top of the same API
+
+The API is stateless and token-based.
+
+---
+
+## Who This Documentation Is For
+
+This documentation is intended for:
+
+- Developers integrating with the Palactix API
+- Agencies configuring the scheduler
+- Teams building white-label social tools
+- Automation systems interacting with social platforms
+
+If you need control over social publishing infrastructure — without rebuilding integrations from scratch — this documentation will guide you.
+
+---
+
+## Getting Started
+
+To begin:
+
+1. Create an account.
+2. Register your developer application.
+3. Configure your platform credentials.
+4. Obtain an access token.
+5. Start integrating or use the scheduler.
+
+Continue with the [Getting Started](/docs/setup) guide.
