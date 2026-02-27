@@ -2,8 +2,16 @@ import Link from "next/link";
 import { AuthCard } from "@/components/ui/auth/AuthCard";
 import { VERIFY_EMAIL_DESCRIPTION, VERIFY_EMAIL_TITLE, VerifyEmailPage } from "@/features/auth/verify-email";
 import { loginRoute } from "@/features/auth/login";
+import { Metadata } from "next";
 
 
+
+export const metadata: Metadata = {
+  title: "Verify Email - Palactix",
+  description:
+    "Verify your Palactix account email."
+};
+  
 export default function VerifyEmail() {
   return (
     <AuthCard
