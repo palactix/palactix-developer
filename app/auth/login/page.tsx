@@ -7,7 +7,7 @@ import { AuthCard } from "@/components/ui/auth/AuthCard";
 export const metadata: Metadata = {
   title: "Login - Palactix",
   description:
-    "Login to your Palactix agency account."
+    "Login to your Palactix account."
 };
 
 export default function LoginPage() {

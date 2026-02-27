@@ -4,6 +4,15 @@ import { Suspense } from "react";
 import { AuthCard } from "@/components/ui/auth/AuthCard";
 import { ForgotPasswordForm } from "@/features/auth/forgot-password";
 import { loginRoute } from "@/features/auth/login";
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Forgot Password - Palactix",
+  description:
+    "Reset your Palactix account password."
+};
+
 
 export default function ForgotPasswordPage() {
   return (

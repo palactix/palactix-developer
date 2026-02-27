@@ -1,8 +1,15 @@
 import { AuthCard } from "@/components/ui/auth/AuthCard";
 import { loginRoute } from "@/features/auth/login";
 import { SignupForm } from "@/features/auth/signup/component";
+import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Signup - Palactix",
+  description:
+    "Create your Palactix agency account."
+};
 
 export default function SignupPage() {
   return (
