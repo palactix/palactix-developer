@@ -6,7 +6,7 @@ export const usePlatforms = () => {
     queryKey: ["platforms"],
     queryFn: async () => {
       const response = await listPlatforms();
-      return response.data;
+      return response;
     },
   });
 };

@@ -7,7 +7,7 @@ import { Header } from "./Header";
 import { useMe } from "@/features/auth/auth.hooks";
 
 export const DeveloperLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isLoading, error } = useMe();
+  const { isLoading, error, data: user } = useMe();
   const [isMobileOpen, setMobileOpen] = useState(false);
 
   if (isLoading) {
@@ -24,7 +24,7 @@ export const DeveloperLayout = ({ children }: { children: React.ReactNode }) => 
 
   return (
     <div className="flex h-screen bg-white dark:bg-zinc-950 overflow-hidden font-sans">
-      <Sidebar isMobileOpen={isMobileOpen} setMobileOpen={setMobileOpen} />
+      <Sidebar isMobileOpen={isMobileOpen} setMobileOpen={setMobileOpen} user={user} />
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-zinc-50/50 dark:bg-zinc-950/50">
         <Header onMenuClick={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">

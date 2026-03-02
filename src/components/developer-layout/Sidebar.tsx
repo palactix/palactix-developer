@@ -19,6 +19,7 @@ import {
 import { AppSwitcher } from "./AppSwitcher";
 import { NavigationGroup } from "./NavigationGroup";
 import Link from "next/link";
+import { AuthUser } from "@/features/auth/auth.types";
 
 const GLOBAL_NAV = [
   { name: "All Apps", href: "/developer/apps", icon: Grid },
@@ -29,8 +30,10 @@ const GLOBAL_NAV = [
 export const Sidebar = ({
   isMobileOpen,
   setMobileOpen,
+  user
 }: {
   isMobileOpen: boolean;
+  user: AuthUser
   setMobileOpen: (v: boolean) => void;
 }) => {
   const params = useParams<{ appId?: string }>();
@@ -113,8 +116,8 @@ export const Sidebar = ({
             <div className="flex items-center gap-3">
                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 shrink-0" />
                <div className="flex-1 overflow-hidden">
-                 <p className="text-sm font-medium truncate text-zinc-900 dark:text-zinc-100">Jitendra</p>
-                 <p className="text-xs text-zinc-500 truncate">jitu@example.com</p>
+                 <p className="text-sm font-medium truncate text-zinc-900 dark:text-zinc-100">{ user.name}</p>
+                 <p className="text-xs text-zinc-500 truncate">{ user.email}</p>
                </div>
             </div>
           ) : (

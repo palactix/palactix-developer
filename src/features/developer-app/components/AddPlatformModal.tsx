@@ -58,6 +58,7 @@ export const AddPlatformModal = ({ isOpen, onClose }: ModalProps) => {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === "dark" ? "dark" : "light";
   const { data: platforms, isLoading, isError } = usePlatforms();
+  console.log("Platforms:", platforms);
 
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
