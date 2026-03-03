@@ -18,7 +18,7 @@ export const DeveloperLayout = ({ children }: { children: React.ReactNode }) => 
     );
   }
 
-  if (error) {
+  if (error || !user) {
     return null;
   }
 

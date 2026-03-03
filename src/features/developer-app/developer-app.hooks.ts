@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createApp, listApps, showApp } from "./developer-app.api";
-import { DeveloperApp, CreateAppPayload } from "./developer-app.types";
+import { AddCredentials, createApp, listApps, showApp, updateCredentials } from "./developer-app.api";
+import { AddCredentialsPayload, CreateAppPayload } from "./developer-app.types";
+import { notify } from "@/shared/notifications/notifier";
 
 // ================= QUERY HOOKS =================
 
@@ -19,7 +20,7 @@ export const useApp = (id: string) => {
     queryKey: ["app", id],
     queryFn: async () => {
       const response = await showApp(id);
-      return response.data;
+      return response;
     },
     enabled: !!id,
   });
@@ -34,6 +35,45 @@ export const useCreateApp = () => {
     mutationFn: (payload: CreateAppPayload) => createApp(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["apps"] });
+    },
+  });
+};
+
+export const useAddCredentials = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ appId, payload }: { appId: string; payload: AddCredentialsPayload }) =>
+      AddCredentials(appId, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["app", variables.appId] });
+      notify.success("Platform credentials added");
+    },
+    onError: () => {
+      notify.error("Failed to add platform credentials");
+    },
+  });
+};
+
+export const useUpdateCredentials = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      appId,
+      integrationId,
+      payload,
+    }: {
+      appId: string;
+      integrationId: string;
+      payload: AddCredentialsPayload;
+    }) => updateCredentials(appId, integrationId, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["app", variables.appId] });
+      notify.success("Platform credentials updated");
+    },
+    onError: () => {
+      notify.error("Failed to update platform credentials");
     },
   });
 };
