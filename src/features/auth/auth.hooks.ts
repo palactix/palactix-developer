@@ -20,7 +20,7 @@ export const useMe = () => {
     refetchOnReconnect: false,
     retry: false,
   });
-
+  
   useEffect(() => {
     if (!query.error) return;
     if (pathname === "/login") return;
@@ -29,7 +29,19 @@ export const useMe = () => {
     if (isUnauthorized) {
       router.replace("/login");
     }
+
   }, [query.error, pathname, router]);
+
+  useEffect(() => {
+    if(query.data ) {
+      const { developer } = query.data;
+      console.log("Developer data:", developer);  
+
+      if(!developer?.has_apps && pathname !== "/developer/onboarding") { 
+        router.replace("/developer/onboarding");
+      }
+    }
+  }, [query.data, pathname, router]);
 
   return query;
 };

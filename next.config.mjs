@@ -9,4 +9,26 @@ const withNextra = nextra({
 export default withNextra({
   // ... Add regular Next.js options here
   reactStrictMode: true,
+  images: {
+    dangerouslyAllowLocalIP: true,
+     remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8000',
+        pathname: '/**',
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.palactix.com",
+        pathname: "/**",
+      },
+    ],
+  },
 })

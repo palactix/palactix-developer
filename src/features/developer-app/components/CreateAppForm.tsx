@@ -19,7 +19,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export const CreateAppForm = () => {
+export const CreateAppForm = ({ hideHeader = false }: { hideHeader?: boolean }) => {
   const router = useRouter();
   const { mutateAsync: createApp, isPending } = useCreateApp();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export const CreateAppForm = () => {
       } else {
          router.push(`/developer/apps`);
       }
-    } catch {
+    } catch (error) {
       toast.error("Failed to create app");
     }
   };
@@ -55,6 +55,76 @@ export const CreateAppForm = () => {
       setLogoPreview(url);
     }
   };
+
+  const formContent = (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="name">App Name</Label>
+        <Input 
+          id="name" 
+          placeholder="E.g. Palactix Publisher" 
+          {...register("name")} 
+          className={`h-11 ${errors.name ? "border-red-500 focus-visible:ring-red-500" : ""}`} 
+        />
+        <AnimatePresence mode="popLayout">
+          {errors.name && (
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="text-sm text-red-500"
+            >
+              {errors.name.message}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="logo">App Logo (Optional)</Label>
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 rounded-xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-dashed border-zinc-300 dark:border-zinc-700 overflow-hidden shrink-0">
+            {logoPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoPreview} alt="Preview" className="h-full w-full object-cover" />
+            ) : (
+              <UploadCloud className="h-6 w-6 text-zinc-400" />
+            )}
+          </div>
+          <div className="flex-1 text-sm">
+              <Input
+                id="logo"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoUpload}
+              />
+              <Button type="button" variant="outline" onClick={() => document.getElementById("logo")?.click()}>
+                Upload Image
+              </Button>
+              <p className="text-xs text-zinc-500 mt-2">JPG, PNG or GIF. Max 5MB.</p>
+          </div>
+        </div>
+      </div>
+
+      <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+        <Button type="submit" className="w-full h-11" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating...
+            </>
+          ) : (
+            "Create App"
+          )}
+        </Button>
+      </motion.div>
+    </form>
+  );
+
+  if (hideHeader) {
+    return formContent;
+  }
 
   return (
     <motion.div
@@ -69,70 +139,7 @@ export const CreateAppForm = () => {
           Set up a new app to access our API and Webhooks.
         </p>
       </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="logo">App Logo (Optional)</Label>
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center border border-dashed border-zinc-300 dark:border-zinc-700 overflow-hidden shrink-0">
-              {logoPreview ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoPreview} alt="Preview" className="h-full w-full object-cover" />
-              ) : (
-                <UploadCloud className="h-6 w-6 text-zinc-400" />
-              )}
-            </div>
-            <div className="flex-1 text-sm">
-                <Input
-                  id="logo"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleLogoUpload}
-                />
-                <Button type="button" variant="outline" onClick={() => document.getElementById("logo")?.click()}>
-                  Upload Image
-                </Button>
-                <p className="text-xs text-zinc-500 mt-2">JPG, PNG or GIF. Max 5MB.</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="name">App Name</Label>
-          <Input 
-            id="name" 
-            placeholder="E.g. Palactix Publisher" 
-            {...register("name")} 
-            className={`h-11 ${errors.name ? "border-red-500 focus-visible:ring-red-500" : ""}`} 
-          />
-          <AnimatePresence mode="popLayout">
-            {errors.name && (
-              <motion.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="text-sm text-red-500"
-              >
-                {errors.name.message}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-          <Button type="submit" className="w-full h-11" disabled={isPending}>
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              "Create App"
-            )}
-          </Button>
-        </motion.div>
-      </form>
+      {formContent}
     </motion.div>
   );
 };
