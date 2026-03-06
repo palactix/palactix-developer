@@ -1,11 +1,11 @@
 const meta = {
-   index: "Introduction",
+   "index": "Introduction",
    "getting-started": "Getting Started",
-   authentication: "Authentication & Ownership",
+   "authentication": "Authentication & Ownership",
    "core-concepts": "Core Concepts",
-   publishing: "Publishing API",
+   "publishing": "Publishing API",
    "api-reference": "API Reference",
-   debugging: "Debugging & Logs",
+   "debugging": "Debugging & Logs",
    "coming-soon": "Coming Soon"
 }
 

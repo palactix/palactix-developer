@@ -33,7 +33,9 @@ export default async function DocsLayout({ children }: Readonly<{
       pageMap={pageMap}
       
     >
-      {children}
+      <div className="plx-docs-content">
+        {children}
+      </div>
     </Layout>
   )
 }

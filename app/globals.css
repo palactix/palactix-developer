@@ -145,3 +145,11 @@ body {
     @apply bg-background text-foreground;
   } */
 }
+
+.plx-docs-content article a {
+  @apply text-primary font-semibold hover:underline;
+}
+
+.nextra-sidebar ul li.active {
+  @apply text-primary font-semibold border-l-2 border-primary pl-2;
+}
