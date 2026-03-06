@@ -1,4 +1,4 @@
-export default {
+const meta = {
    index: "Introduction",
    "getting-started": "Getting Started",
    authentication: "Authentication & Ownership",
@@ -8,3 +8,5 @@ export default {
    debugging: "Debugging & Logs",
    "coming-soon": "Coming Soon"
 }
+
+export default meta
