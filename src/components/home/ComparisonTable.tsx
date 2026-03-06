@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Minus, Cross, X, Check } from "lucide-react";
-import { Container } from "@/components/ui/container";;
+import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import Link from "next/link";

@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, CheckCircle2 } from "lucide-react";
 import { motion } from "motion/react";
-import { Container } from "@/components/ui/container";;
+import { Container } from "@/components/ui/container";
 import Link from "next/link";
 
 export function HeroSection() {

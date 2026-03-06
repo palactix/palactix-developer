@@ -3,7 +3,7 @@
 import React from "react";
 
 import { motion } from "motion/react";
-import { Container } from "@/components/ui/container";;
+import { Container } from "@/components/ui/container";
 import Image from "next/image";
 import { usePlatforms } from "@/features/platform/platform.hooks";
 import { usePlatformLogo } from "@/features/platform/usePlatformLogo";
