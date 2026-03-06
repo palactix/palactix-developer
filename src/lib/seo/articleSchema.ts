@@ -1,4 +1,4 @@
-import type { BlogPost } from "@/features/blog/types/blog.types";
+import type { BlogPost } from "@/features/blog/blog.type";
 
 export function generateArticleSchema(blog: BlogPost, url: string) {
   const keywords = blog.tags?.length ? blog.tags : blog.seo_keywords || [];

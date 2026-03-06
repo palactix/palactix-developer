@@ -34,15 +34,20 @@ const normalizePath = (path: string): string => {
 const buildApiUrl = (path: string): string => {
   const normalizedPath = normalizePath(path);
 
-  if (normalizedPath.startsWith("/api/")) {
-    return normalizedPath;
+  const relativePath = normalizedPath.startsWith("/api/")
+    ? normalizedPath
+    : normalizedPath.startsWith("/auth/")
+      ? `/api${normalizedPath}`
+      : `/api${normalizedPath}`;
+
+  // On the server (Node.js), fetch requires an absolute URL.
+  // Use APP_URL env var so the request goes through the BFF proxy.
+  if (typeof window === "undefined") {
+    const appUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+    return `${appUrl}${relativePath}`;
   }
 
-  if (normalizedPath.startsWith("/auth/")) {
-    return `/api${normalizedPath}`;
-  }
-
-  return `/api${normalizedPath}`;
+  return relativePath;
 };
 
 const toApiError = (status: number, payload: unknown, retryAfterHeader?: string | null): Error => {
