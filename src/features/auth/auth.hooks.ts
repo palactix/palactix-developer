@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AuthError } from "@/lib/errors";
 import { getMe } from "./auth.api";
+import { loginRoute } from "./login";
 
 export const useMe = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ export const useMe = () => {
 
     const isUnauthorized = query.error instanceof AuthError && query.error.status === 401;
     if (isUnauthorized) {
-      router.replace("/login");
+      router.replace(loginRoute);
     }
 
   }, [query.error, pathname, router]);
@@ -35,7 +36,6 @@ export const useMe = () => {
   useEffect(() => {
     if(query.data ) {
       const { developer } = query.data;
-      console.log("Developer data:", developer);  
 
       if(!developer?.has_apps && pathname !== "/developer/onboarding") { 
         router.replace("/developer/onboarding");

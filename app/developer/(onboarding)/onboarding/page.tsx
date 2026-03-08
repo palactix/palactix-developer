@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMe } from "@/features/auth/auth.hooks";
 import { OnboardingLayout } from "@/components/developer-onboarding/OnboardingLayout";
 import { OnboardingHeader } from "@/components/developer-onboarding/OnboardingHeader";
@@ -10,9 +10,14 @@ import { CreateAppForm } from "@/features/developer-app/components/CreateAppForm
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { AuthUser } from "@/features/auth/auth.types";
+import { notify } from "@/shared/notifications/notifier";
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
+  const isVerfied = params.get("verified");
+
   const { data: user, isLoading } = useMe() as { data: AuthUser | undefined, isLoading: boolean };
 
   useEffect(() => {
@@ -21,6 +26,14 @@ export default function OnboardingPage() {
       router.replace("/developer/apps");
     }
   }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (isVerfied == "1") {
+      setTimeout(() => {
+        notify.success("Email verified successfully! Create your first app.");
+      }, 500);
+    }
+  }, [isVerfied]);
 
   if (isLoading) {
     return (

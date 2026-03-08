@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { loginRoute } from "@/features/auth/login";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -44,7 +45,7 @@ export function Navbar() {
             Pricing
           </Link>
           <Link
-            href="/auth/login"
+            href={loginRoute}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Login

@@ -7,11 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, UploadCloud } from "lucide-react";
-import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateApp } from "../developer-app.hooks";
+import { notify } from "@/shared/notifications/notifier";
 
 const schema = z.object({
   name: z.string().min(3, "App name must be at least 3 characters").max(50),
@@ -36,14 +37,14 @@ export const CreateAppForm = ({ hideHeader = false }: { hideHeader?: boolean }) 
   const onSubmit = async (data: FormValues) => {
     try {
       const response = await createApp({ name: data.name, logo: logoFile || undefined });
-      toast.success("App created successfully!");
+      notify.success("App created successfully!");
       if (response?.data?.id) {
          router.push(`/developer/apps/${response.data.id}`);
       } else {
          router.push(`/developer/apps`);
       }
     } catch (error) {
-      toast.error("Failed to create app");
+      notify.error("Failed to create app");
     }
   };
 

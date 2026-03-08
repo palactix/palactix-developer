@@ -6,19 +6,19 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Signup - Palactix",
+  title: "Developer Signup - Palactix",
   description:
-    "Create your Palactix agency account."
+    "Create your Palactix developer account."
 };
 
 export default function SignupPage() {
   return (
     <AuthCard
-      title="Create your agency account"
-      subtitle="Start your 14-day evaluation — no credit card required. Evaluation begins once your first client account is connected."
+      title="Create your developer account"
+      subtitle="Create your account to start building and managing your apps with Palactix."
     >
       <Suspense fallback={<div>Loading...</div>}>
-        <SignupForm type="agency" />
+        <SignupForm type="developer" />
       </Suspense>
        <p className="text-xs text-center text-muted-foreground mt-6">
         By signing up, you agree to our{" "}
@@ -34,12 +34,6 @@ export default function SignupPage() {
         Already have an account?{" "}
         <Link href={loginRoute} className="text-primary font-semibold hover:underline">
           Sign in
-        </Link>
-      </p>
-      <p className="text-center mt-6 text-sm text-muted-foreground">
-        Developers{" "}
-        <Link href={"/developer/signup"} className="text-primary font-semibold hover:underline">
-          Create a developer account 
         </Link>
       </p>
     </AuthCard>
