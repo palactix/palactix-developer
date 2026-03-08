@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { forwardToLaravel, forwardToLaravelPublic } from "@/lib/proxy-handler";
 
 /** Path prefixes that can be read without authentication */
-const PUBLIC_GET_PREFIXES = ["/blog/"];
+const PUBLIC_GET_PREFIXES = ["/blog/", "/auth/resend-verification-email"];
 
 const isPublicGetRequest = (path: string, method: string): boolean =>
   method === "GET" && PUBLIC_GET_PREFIXES.some((prefix) => `/${path}`.startsWith(prefix));

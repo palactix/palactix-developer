@@ -15,7 +15,7 @@ const shouldForwardBody = (method: string): boolean => {
   return !["GET", "HEAD"].includes(method.toUpperCase());
 };
 
-const createForwardHeaders = (request: NextRequest, token: string): Headers => {
+const createForwardHeaders = (request: NextRequest, token: string|null): Headers => {
   const headers = new Headers();
 
   request.headers.forEach((value, key) => {
@@ -24,7 +24,9 @@ const createForwardHeaders = (request: NextRequest, token: string): Headers => {
     }
   });
 
-  headers.set("Authorization", `Bearer ${token}`);
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
   if (!headers.has("Accept")) {
     headers.set("Accept", "application/json");
   }
@@ -51,7 +53,7 @@ const createClientResponse = async (upstreamResponse: Response): Promise<NextRes
 export const forwardToLaravel = async (request: NextRequest, path: string): Promise<NextResponse> => {
   const accessToken = readAccessToken(request);
   if (!accessToken) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    //return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   const method = request.method.toUpperCase();
