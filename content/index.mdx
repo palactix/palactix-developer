@@ -1,107 +1,80 @@
 ---
 title: Introduction
-description: Overview of the Palactix unified social API and white-label infrastructure for agencies and developers.
+description: Publishing API where you bring your own OAuth apps. Your clients authorize you, not a vendor.
 ---
 
 # Introduction
 
-**Palactix** is a unified social publishing infrastructure designed for agencies and developers.
+Palactix is a publishing API where you bring your own OAuth apps.
 
-It provides a single API layer for managing social accounts and publishing content — along with an optional white-label scheduler built on top of that same API.
+Palactix provide a unified API for publishing content to multiple social platforms while using your own OAuth applications.
 
-Palactix is API-first.  
-The scheduler is simply one implementation of it.
+Your clients authorize **your application**, not a third-party vendor. OAuth tokens belong to you. Client connections are portable.
 
----
-
-## Two Ways to Use Palactix
-
-Palactix can be used in two different ways, depending on your needs.
-
-### As a Unified API (For Developers)
-
-Developers can integrate directly with the Palactix API to:
-
-- Build custom scheduling tools
-- Create internal dashboards
-- Power automation workflows
-- Enable AI-driven publishing
-- Integrate social publishing into existing systems
-
-The API provides a consistent interface across supported platforms, allowing you to manage accounts and publish content without building separate integrations for each provider.
+**Supported Platforms:** Meta (Facebook), Instagram, LinkedIn, TikTok, X (Twitter), Youtube
 
 ---
 
-### As a White-Label Scheduler (For Agencies)
+## The Core Difference
 
-Agencies can use the built-in scheduler to:
+**Traditional tools:**
+```
+Agency → Hootsuite → Client's Instagram
+         ↑
+    (Hootsuite owns token)
+```
 
-- Manage multiple clients
-- Handle team workflows
-- Publish across platforms
-- Operate under custom domains
-- Maintain workspace isolation
+**Palactix:**
+```
+Agency → Your Meta App → Client's Instagram
+         ↑
+    (You own token)
+```
 
-The scheduler uses the same unified API available to developers.  
-There is no separate internal system.
-
----
-
-## The BYO (Bring Your Own) OAuth Model
-
-Palactix does not provide shared platform application credentials.
-
-Instead, each developer or agency connects their own platform applications (for example, Meta, LinkedIn, or other supported providers).
-
-This means:
-
-- You retain control of your platform apps.
-- You control your API keys.
-- Your connections are not tied to a shared Palactix application.
-- You reduce vendor-level lock-in.
-
-Palactix manages the orchestration and infrastructure —  
-you control the platform credentials.
-
-A detailed explanation of this model is available in the [Authentication & Ownership](/docs/auth) section.
+**Result:** Switch tools anytime without reconnecting accounts.
 
 ---
 
-## Architecture Overview
+## Ways to Use Palactix
 
-At a high level, Palactix consists of:
+### Use the API
+Developers can integrate directly with the unified REST API to build custom publishing tools, automation systems, or internal dashboards.
 
-- A unified API layer
-- App-based authentication and permission control
-- Multi-tenant workspace isolation
-- Event logging and observability
-- An optional scheduler built on top of the same API
+[Explore the API →](#)
 
-The API is stateless and token-based.
+### Use the Scheduler
+Agencies can use the built-in scheduler interface to manage workspaces, teams, and client accounts while still using their own OAuth apps.
+
+[Scheduler Guide →](#)
 
 ---
 
-## Who This Documentation Is For
+## Example Request
 
-This documentation is intended for:
+```bash
+POST /v1/publish
+Authorization: Bearer your_token
 
-- Developers integrating with the Palactix API
-- Agencies configuring the scheduler
-- Teams building white-label social tools
-- Automation systems interacting with social platforms
+{
+  "account_id": "acc_123",
+  "content": {
+    "text": "Product launch!"
+  }
+}
+```
 
-If you need control over social publishing infrastructure — without rebuilding integrations from scratch — this documentation will guide you.
+One publishing API works across multiple platforms.
 
 ---
 
 ## Getting Started
 
-To begin:
+- **Authenticate your application** → [Authentication Guide](#)
+- **Create your developer app** → [Developer Setup](#)
+- **Connect social accounts** → [Account Integration](#)
 
-1. Create an [account](/developer/signup).
-2. Register your developer application.
-3. Configure your platform credentials.
-4. Obtain an access token.
-5. Start integrating or use the scheduler.
+---
 
-Continue with the [Getting Started](/docs/setup) guide.
+## Need Help?
+
+See the [FAQ](#) or contact support@palactix.com
