@@ -20,6 +20,7 @@ const footerLinks = [
   { href: "/why-palactix-exists", label: "Why Palactix" },
   { href: "/contact-us", label: "Contact Us" },
   { href: "/blog", label: "Blog" },
+  { href: "/developer", label: "Developer" },
 ];
 
 export function Footer() {

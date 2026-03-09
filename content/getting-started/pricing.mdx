@@ -1,0 +1,289 @@
+---
+title: Palactix Pricing – Social Media Publishing API Pricing
+description: Simple pay-as-you-go pricing for the Palactix social media publishing API. Get 100 publish operations free every month and pay only $0.01 per publish.
+---
+
+import { Callout } from 'nextra/components'
+import { Check } from 'lucide-react'
+
+# Pricing
+
+Palactix uses pay-as-you-go pricing. You only pay for what you publish.
+
+**No subscriptions. No seat licenses. No monthly minimums.**
+
+---
+
+## Pricing Model
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+
+<div className="border border-border rounded-lg p-6 bg-card">
+
+<div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+Free Tier
+</div>
+
+<div className="text-4xl font-bold mb-4">
+100 <span className="text-xl font-normal text-muted-foreground">publishes</span>
+</div>
+
+<ul className="space-y-2 text-sm">
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>100 publishes free every month</span>
+</li>
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>All platforms included</span>
+</li>
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>Read operations unlimited</span>
+</li>
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>No credit card required</span>
+</li>
+
+</ul>
+
+<div className="mt-6 pt-4 border-t border-border">
+<a href="/developer/signup" className="text-primary hover:underline font-medium">
+Start Free →
+</a>
+</div>
+
+</div>
+
+<div className="border-2 border-primary rounded-lg p-6 bg-card relative">
+
+<div className="absolute -top-3 left-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
+Most Popular
+</div>
+
+<div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+Pay As You Go
+</div>
+
+<div className="text-4xl font-bold mb-4">
+$0.01 <span className="text-xl font-normal text-muted-foreground">/ publish</span>
+</div>
+
+<ul className="space-y-2 text-sm">
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>Charged per account per publish</span>
+</li>
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>Unlimited accounts</span>
+</li>
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>Read operations free</span>
+</li>
+
+<li className="flex items-start gap-2">
+<Check className="w-5 h-5 text-green-600 mt-0.5" />
+<span>Volume discounts at scale</span>
+</li>
+
+</ul>
+
+<div className="mt-6 pt-4 border-t border-border">
+<a href="/developer/signup" className="text-primary hover:underline font-medium">
+Get Started →
+</a>
+</div>
+
+</div>
+
+</div>
+
+---
+
+## How Pricing Works
+
+Palactix charges **per account per publish**, not per API call.
+
+### Example
+
+If you make one API call that publishes to multiple accounts:
+
+```json
+POST /v1/publish
+Authorization: Bearer your_token
+
+{
+  "accounts": [
+    "acc_instagram_123",
+    "acc_linkedin_456",
+    "acc_tiktok_789",
+    "acc_facebook_012",
+    "acc_twitter_345"
+  ],
+  "content": {
+    "text": "Product launch today!"
+  }
+}
+```
+
+**You are charged:** 5 accounts × $0.01 = **$0.05**
+
+---
+
+## Why Per Account?
+
+When you publish to multiple accounts, Palactix makes separate API calls to each platform:
+
+- Validates OAuth tokens
+- Checks platform rate limits
+- Handles errors independently
+- Logs each publish event
+
+Publishing to multiple accounts requires **multiple platform API calls**, so pricing reflects actual infrastructure usage.
+
+---
+
+## Cost Examples
+
+| Monthly Usage | Accounts | Total Publishes | Cost / Month |
+|---|---|---|---|
+Small developer | 50 posts × 1 account | 50 | $0.50 |
+Agency | 100 posts × 5 accounts | 500 | $5.00 |
+Marketing platform | 200 posts × 10 accounts | 2,000 | $20.00 |
+Automation platform | 1,000 posts × 20 accounts | 20,000 | $160.00 |
+
+<Callout type="info">
+Volume discounts automatically apply at higher usage levels.
+</Callout>
+
+---
+
+## Volume Discounts
+
+| Monthly Publishes | Price |
+|---|---|
+0 – 10,000 | $0.01 |
+10,000+ | $0.008 |
+50,000+ | $0.006 |
+
+---
+
+## Read Operations
+
+**All read operations are free**
+
+Examples include:
+
+- GET /v1/accounts
+- GET /v1/accounts/[id]/analytics
+- GET /v1/users
+- Other GET endpoints
+
+Only publish operations are charged.
+
+---
+
+## Free Tier Details
+
+### How does the free tier work?
+
+Every developer account gets **100 free publish operations every month**.
+
+### What happens after the 100 free publishes each month?
+
+You can add a payment method and continue using pay-as-you-go pricing.
+
+### Can I test without a credit card?
+
+Yes. The free tier requires **no payment method**.
+
+---
+
+## FAQ
+
+### What counts as a publish?
+
+A publish is counted **per account**.
+
+Publishing to three accounts counts as **three publish operations**.
+
+### Are failed publishes charged?
+
+No. Only successful publishes are counted.
+
+### Is there a monthly minimum?
+
+No. If you publish nothing, you pay nothing.
+
+### Are read operations really free?
+
+Yes. All GET requests are free.
+
+---
+
+## Get Started
+
+<div className="my-8 p-6 border border-border rounded-lg bg-card">
+
+<h3 className="text-xl font-bold mb-3">Ready to start building?</h3>
+
+<p className="text-muted-foreground mb-6">
+Create a developer account and get 100 free publishes every month.
+</p>
+
+<a
+href="/developer/signup"
+className="inline-flex items-center justify-center px-6 py-3  rounded-lg font-semibold  "
+>
+Create Account
+</a>
+
+</div>
+
+---
+
+<script
+type="application/ld+json"
+dangerouslySetInnerHTML={{
+__html: JSON.stringify({
+"@context": "https://schema.org",
+"@type": "FAQPage",
+"mainEntity": [
+{
+"@type": "Question",
+"name": "What counts as a publish?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "A publish operation is counted each time content is published to a platform account. Publishing to multiple accounts counts as multiple publish operations."
+}
+},
+{
+"@type": "Question",
+"name": "Are failed publishes charged?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "No. Publish operations are only counted when the publish request succeeds."
+}
+},
+{
+"@type": "Question",
+"name": "Are read operations free?",
+"acceptedAnswer": {
+"@type": "Answer",
+"text": "Yes. All GET endpoints such as analytics, accounts and posts are free."
+}
+}
+]
+})
+}}
+/>
