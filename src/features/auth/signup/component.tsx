@@ -9,6 +9,7 @@ import { signupSchema } from "./rules";
 import type { SignupFormValues, SignupType } from "./types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { FormMessage } from "@/components/shared/FormMessage";
 import { Button } from "@/components/ui/button";
 
@@ -55,9 +56,8 @@ export const SignupForm = ({ type }: SignupFormProps) => {
 
       <div className="space-y-2">
         <Label htmlFor="signup-password">Password</Label>
-        <Input
+        <PasswordInput
           id="signup-password"
-          type="password"
           autoComplete="new-password"
           placeholder="Create a strong password"
           {...register("password")}

@@ -9,6 +9,7 @@ export const createApp = async (payload: CreateAppPayload): Promise<DeveloperApp
    if (payload.logo) {
       formData.append("logo", payload.logo);
    }
+   formData.append("type", payload.type);
 
    return apiClient<DeveloperAppResponse>("/developer/apps", {
       method: "POST",

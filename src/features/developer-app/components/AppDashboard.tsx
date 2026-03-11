@@ -12,21 +12,16 @@ import { usePlatformLogo } from "@/features/platform/usePlatformLogo";
 import { ActivationChecklist } from "./ActivationChecklist";
 import { AddPlatformModal } from "./AddPlatformModal";
 
+import { PlatformLogo } from "@/features/platform/platform.logo";
+import { formatDateUtc } from "@/lib/utils";
+import Image from "next/image";
+
 const statusBadgeStyles: Record<AppCredStatus, string> = {
   [AppCredStatus.PENDING]: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20",
   [AppCredStatus.VERIFIED]: "bg-green-50 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20",
   [AppCredStatus.FAILED]: "bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20",
 };
 
-const formatDateUtc = (value?: string) => {
-  if (!value) return "—";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(value));
-};
 
 const getInitials = (value?: string | null) => {
   if (!value || !value.trim()) return "AP";
@@ -40,18 +35,13 @@ const IntegrationCard = ({
   integration: PlatformIntegration;
   onEdit: (integration: PlatformIntegration) => void;
 }) => {
-  const logo = usePlatformLogo(integration.platform);
 
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/40 p-4 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/60 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center overflow-hidden shrink-0">
-            {logo ? (
-              <img src={logo} alt={integration.platform?.name ?? "Platform"} className="w-7 h-7 object-contain" />
-            ) : (
-              <span className="text-xs font-semibold uppercase text-zinc-500">{getInitials(integration.platform?.name)}</span>
-            )}
+            <PlatformLogo platform={integration.platform} />
           </div>
           <div className="min-w-0">
             <p className="font-medium text-zinc-900 dark:text-zinc-100 truncate">{integration.platform?.name || "Unknown Platform"}</p>
@@ -66,7 +56,7 @@ const IntegrationCard = ({
       {integration.status === AppCredStatus.PENDING && (
         <div className="pt-3">
           <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" size="sm" disabled>
+            <Button type="button" variant="outline" size="sm">
               Verify
             </Button>
             <Button type="button" variant="outline" size="sm" onClick={() => onEdit(integration)}>
@@ -125,7 +115,7 @@ export const AppDashboard = ({ appId }: { appId: string }) => {
         <div className="flex items-center gap-4 min-w-0">
           <div className="w-12 h-12 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center overflow-hidden shrink-0">
             {app.logo_url ? (
-              <img src={app.logo_url} alt={app.name ?? "App logo"} className="w-full h-full object-cover" />
+              <Image src={app.logo_url} alt={app.name ?? "App logo"} className="w-full h-full object-cover" width={48} height={48} />
             ) : (
               <span className="text-sm font-semibold uppercase text-zinc-500">{getInitials(app.name)}</span>
             )}

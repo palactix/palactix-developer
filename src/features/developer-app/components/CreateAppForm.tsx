@@ -36,7 +36,7 @@ export const CreateAppForm = ({ hideHeader = false }: { hideHeader?: boolean }) 
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const response = await createApp({ name: data.name, logo: logoFile || undefined });
+      const response = await createApp({ name: data.name, logo: logoFile || undefined, type: "developer" });
       notify.success("App created successfully!");
       if (response?.data?.id) {
          router.push(`/developer/apps/${response.data.id}`);

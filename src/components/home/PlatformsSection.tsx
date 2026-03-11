@@ -1,13 +1,10 @@
 "use client";
 
-import React from "react";
-
 import { motion } from "motion/react";
 import { Container } from "@/components/ui/container";
-import Image from "next/image";
 import { usePlatforms } from "@/features/platform/platform.hooks";
-import { usePlatformLogo } from "@/features/platform/usePlatformLogo";
 import { Platform } from "@/features/platform/platform.types";
+import { PlatformLogo } from "@/features/platform/platform.logo";
 
 export function PlatformsSection() {
   const { data, isLoading } = usePlatforms();
@@ -82,19 +79,4 @@ export function PlatformsSection() {
       </Container>
     </section>
   );
-}
-
-function PlatformLogo({ platform }: { platform: Platform }) {
-  const logo = usePlatformLogo(platform);
-
-  return (
-     <Image
-        width={48}
-        height={48}
-        src={logo || "/placeholder-logo.png"}
-        alt={platform.name}
-        className="w-10 h-10 object-contain"
-        unoptimized
-      />
-  )
 }

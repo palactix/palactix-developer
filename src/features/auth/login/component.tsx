@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getErrorMessage } from "@/lib/errors";
 import { useLogin } from "./hook";
 import type { LoginInput } from "./types";
@@ -14,19 +14,28 @@ import {
 } from "@/features/auth/verify-email";
 
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/shared/FormMessage";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export const LoginForm = () => {
-  const { mutate, isPending, error } = useLogin();
+  const { mutate, isPending, error, isSuccess } = useLogin();
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const router = useRouter();
 
   const { canResend, secondsLeft, startCooldown } = useResendCooldown();
   const { resend, isPending: isResendPending } = useResendVerificationEmail({
     onSuccess: startCooldown,
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      router.push("/dashboard");
+    }
+  }, [isSuccess, router]);
 
   const showResendVerification = isUnverifiedEmailError(error) && Boolean(submittedEmail);
 
@@ -70,7 +79,7 @@ export const LoginForm = () => {
             Forgot password?
           </Link>
         </div>
-        <Input id="password" type="password" placeholder="Enter your password" {...register("password")} />
+        <PasswordInput id="password" placeholder="Enter your password" {...register("password")} />
         <FormMessage>{errors.password?.message}</FormMessage>
       </div>
 

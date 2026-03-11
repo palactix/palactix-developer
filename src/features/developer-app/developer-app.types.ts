@@ -52,6 +52,7 @@ export interface DeveloperAppsResponse {
 export interface CreateAppPayload {
   name: string;
   logo?: File;
+  type: string;
 }
 
 export interface AddCredentialsPayload {
