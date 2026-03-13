@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMe } from "@/features/auth/auth.hooks";
 import { OnboardingLayout } from "@/components/developer-onboarding/OnboardingLayout";
@@ -12,7 +12,16 @@ import { Loader2 } from "lucide-react";
 import { AuthUser } from "@/features/auth/auth.types";
 import { notify } from "@/shared/notifications/notifier";
 
+
 export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+      <OnboardingPageContent />
+    </Suspense>
+  );
+}
+
+function OnboardingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
