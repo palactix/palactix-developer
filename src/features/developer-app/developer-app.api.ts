@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import { DeveloperAppResponse, DeveloperAppsResponse, CreateAppPayload, AddCredentialsPayload, DeveloperAppInfoResponse, AddCredentialResponse } from "./developer-app.types";
+import { DeveloperAppResponse, DeveloperAppsResponse, CreateAppPayload, AddCredentialsPayload, DeveloperAppInfoResponse, AddCredentialResponse, GenerateCredentialsResponse } from "./developer-app.types";
 
 // ================= API FUNCTIONS =================
 
@@ -36,5 +36,11 @@ export const updateCredentials = async (appId: string, integrationId: string, pa
    return apiClient<AddCredentialResponse>(`/developer/apps/${appId}/integrations/${integrationId}`, {
       method: "POST",
       body: JSON.stringify(payload),
+   });
+}
+
+export const generateAppCredentials = async (appId: string): Promise<GenerateCredentialsResponse> => {
+   return apiClient<GenerateCredentialsResponse>(`/developer/apps/${appId}/generate-credentials`, {
+      method: "POST",
    });
 }

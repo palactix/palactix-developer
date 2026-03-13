@@ -2,15 +2,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Copy, Plus, Check } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import { useApp } from "../developer-app.hooks";
 import { AppCredStatus, AppStatus, PlatformIntegration } from "../developer-app.types";
-import { usePlatformLogo } from "@/features/platform/usePlatformLogo";
 import { ActivationChecklist } from "./ActivationChecklist";
 import { AddPlatformModal } from "./AddPlatformModal";
+import { ApiCredentialsPanel } from "./ApiCredentialsPanel";
 
 import { PlatformLogo } from "@/features/platform/platform.logo";
 import { formatDateUtc } from "@/lib/utils";
@@ -72,16 +70,8 @@ const IntegrationCard = ({
 export const AppDashboard = ({ appId }: { appId: string }) => {
   const { data: app, isLoading } = useApp(appId);
 
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingIntegration, setEditingIntegration] = useState<PlatformIntegration | null>(null);
-
-  const copyToClipboard = async (text: string, key: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    toast.success("Copied to clipboard");
-    setTimeout(() => setCopiedKey(null), 1800);
-  };
 
   if (isLoading) {
     return (
@@ -96,8 +86,6 @@ export const AppDashboard = ({ appId }: { appId: string }) => {
   }
 
   const integratedPlatformIds = (app.integrations ?? []).map((integration: PlatformIntegration) => integration.platform_id);
-  const maskedClientId = app.client_id ? `${app.client_id.slice(0, 4)}••••••${app.client_id.slice(-4)}` : "app_xxxxxxxxxxxxxxxx";
-
   const checklistStep = (() => {
     if (app.status === AppStatus.ACTIVE) return 4;
     if ((app.integrations ?? []).some((i) => i.status === AppCredStatus.VERIFIED)) return 3;
@@ -198,25 +186,11 @@ export const AppDashboard = ({ appId }: { appId: string }) => {
             </div>
 
             <div className="p-6">
-              {app.status === AppStatus.DRAFT ? (
-                <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-xl p-4 border border-zinc-100 dark:border-zinc-800">
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 text-center">Activate your app to view API credentials.</p>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-zinc-500 font-medium">Client ID</Label>
-                  <div className="flex bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-3 border border-zinc-200 dark:border-zinc-800 items-center justify-between font-mono text-sm group">
-                    <span className="text-zinc-900 dark:text-zinc-100 truncate">{maskedClientId}</span>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(app.client_id || "", "clientId")}
-                      className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                    >
-                      {copiedKey === "clientId" ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-              )}
+              <ApiCredentialsPanel
+                appId={app.id}
+                appStatus={app.status}
+                clientId={app.client_id}
+              />
             </div>
           </motion.div>
         </div>

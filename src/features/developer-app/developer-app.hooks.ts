@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AddCredentials, createApp, listApps, showApp, updateCredentials } from "./developer-app.api";
+import { AddCredentials, createApp, generateAppCredentials, listApps, showApp, updateCredentials } from "./developer-app.api";
 import { AddCredentialsPayload, CreateAppPayload } from "./developer-app.types";
 import { notify } from "@/shared/notifications/notifier";
 
@@ -74,6 +74,21 @@ export const useUpdateCredentials = () => {
     },
     onError: () => {
       notify.error("Failed to update platform credentials");
+    },
+  });
+};
+
+export const useGenerateAppCredentials = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ appId }: { appId: string }) => generateAppCredentials(appId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["app", variables.appId] });
+      notify.success("App credentials generated");
+    },
+    onError: () => {
+      notify.error("Failed to generate app credentials");
     },
   });
 };

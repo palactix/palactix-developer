@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowLeft, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CopyButton } from "@/components/shared/CopyButton";
 import { usePlatforms } from "@/features/platform/platform.hooks";
 import { usePlatformLogo } from "@/features/platform/usePlatformLogo";
 import type { Platform } from "@/features/platform/platform.types";
@@ -47,7 +49,7 @@ const PlatformOptionCard = ({
     >
       <div className="w-12 h-12 rounded-full bg-white dark:bg-zinc-800 shadow-sm border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden text-xl font-bold text-zinc-400">
         {logo ? (
-          <img src={logo} alt={platform.name} className="h-8 w-8 object-contain" />
+          <Image src={logo} alt={platform.name} className="h-8 w-8 object-contain" width={32} height={32} />
         ) : (
           platform.name[0]
         )}
@@ -87,14 +89,21 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
     onClose();
   };
 
+  const redirectUrl = selectedPlatform
+    ? `${process.env.NEXT_PUBLIC_CORE_SYSTEM_URL}/oauth/${selectedPlatform.slug}/callback`
+    : "";
+
   useEffect(() => {
     if (!isOpen) return;
 
     if (editingIntegration) {
+      const existingClientId = editingIntegration.client_id ?? "";
+      const existingClientSecret = editingIntegration.client_secret ?? "";
+
       setSelectedPlatform(editingIntegration.platform);
       reset({
-        client_id: editingIntegration.credentials?.client_id ?? "",
-        client_secret: editingIntegration.credentials?.client_secret ?? "",
+        client_id: existingClientId,
+        client_secret: existingClientSecret,
       });
       return;
     }
@@ -113,9 +122,10 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
     try {
       const payload: AddCredentialsPayload = {
         platform_id: String(selectedPlatform.id),
-        credentials: {
-          client_id: values.client_id,
-          client_secret: values.client_secret,
+        client_id: values.client_id,
+        client_secret: values.client_secret,
+        client_meta: {
+          redirect_url: redirectUrl,
         },
       };
 
@@ -145,7 +155,6 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-            onClick={resetAndClose}
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 py-8 pointer-events-none">
             <motion.div
@@ -170,7 +179,9 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                     </button>
                   )}
                   <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-                    {selectedPlatform ? (isEditMode ? "Edit Credentials" : "Enter Credentials") : "Add Platform"}
+                    {selectedPlatform
+                      ? `${isEditMode ? "Edit Credentials for" : "Add Credentials for"} ${selectedPlatform.name}`
+                      : "Add Platform"}
                   </h2>
                 </div>
                 <button
@@ -182,7 +193,7 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                 </button>
               </div>
 
-              <div className="relative min-h-[300px]">
+              <div className="relative">
                 <AnimatePresence mode="wait" initial={false}>
                   {!selectedPlatform ? (
                     <motion.div
@@ -191,16 +202,16 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.2 }}
-                      className="p-6 grid grid-cols-2 gap-4 absolute inset-0"
+                      className="p-6 grid grid-cols-2 gap-4"
                     >
                       {isLoading && (
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="col-span-2 flex items-center justify-center py-12">
                           <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
                         </div>
                       )}
 
                       {isError && (
-                        <div className="absolute inset-0 flex items-center justify-center px-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                        <div className="col-span-2 flex items-center justify-center px-8 py-12 text-center text-sm text-zinc-500 dark:text-zinc-400">
                           Unable to load platforms right now. Please try again.
                         </div>
                       )}
@@ -222,16 +233,40 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ duration: 0.2 }}
                       onSubmit={handleSubmit(handleSave)}
-                      className="p-6 space-y-5 absolute inset-0"
+                      className="p-6 space-y-5"
+                      autoComplete="new-password"
                     >
-                      <div className="text-sm text-zinc-500 dark:text-zinc-400">{selectedPlatform.name}</div>
-
                       <div className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                            <Label htmlFor="redirect_url">Redirect URL</Label>
+                            <p className="text-[11px] font-medium text-amber-700 dark:text-amber-300">
+                              Paste this redirect URL to your platform app.
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              id="redirect_url"
+                              value={redirectUrl}
+                              readOnly
+                              className="h-11 font-mono text-xs"
+                            />
+                            <CopyButton
+                              text={redirectUrl}
+                              ariaLabel="Copy redirect URL"
+                              successMessage="Redirect URL copied"
+                              errorMessage="Unable to copy redirect URL"
+                              variant="outline"
+                              size="icon-lg"
+                              className="h-11 w-11 shrink-0"
+                            />
+                          </div>
+                        </div>
                         <div className="space-y-2">
                           <Label htmlFor="client_id">Platform App ID</Label>
                           <Input
                             id="client_id"
-                            autoComplete="off"
+                            autoComplete="new-password"
                             placeholder="E.g. 1234567890"
                             className="h-11"
                             {...register("client_id", { required: true })}
@@ -242,16 +277,15 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                           <Label htmlFor="client_secret">Platform Secret</Label>
                           <Input
                             id="client_secret"
-                            type="password"
                             placeholder="Enter the secret key"
                             className="h-11"
-                            autoComplete="off"
+                            autoComplete="new-password"
                             {...register("client_secret", { required: true })}
                           />
                           {errors.client_secret && <p className="text-xs text-red-500">Platform Secret is required</p>}
                         </div>
                       </div>
-                      <div className="pt-2">
+                      <div className="border-t border-zinc-100 dark:border-zinc-800/50 pt-4">
                         <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
                           {isSubmitting ? (
                             <>

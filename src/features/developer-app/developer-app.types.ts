@@ -5,7 +5,7 @@ export interface DeveloperApp {
   name: string;
   logo_url: string | null;
   status: AppStatus;
-  client_id: string;
+  client_id: string | null;
   created_at: string;
   updated_at: string;
   integrations: PlatformIntegration[];
@@ -22,7 +22,10 @@ export interface PlatformIntegration {
   id: string;
   platform_id: number;
   app_id: string;
-  credentials: PlatformCredentialFields;
+  credentials?: PlatformCredentialFields;
+  client_id?: string;
+  client_secret?: string;
+  client_meta?: PlatformClientMeta;
   status: AppCredStatus;
   created_at: string;
   platform: Platform;
@@ -34,9 +37,15 @@ export enum AppCredStatus {
   FAILED = 'failed',
 }
 
+export interface PlatformClientMeta {
+  redirect_url?: string;
+  [key: string]: string | undefined;
+}
+
 export interface PlatformCredentialFields {
   client_id: string;
   client_secret: string;
+  client_meta?: PlatformClientMeta;
 }
 
 export interface DeveloperAppResponse {
@@ -57,7 +66,14 @@ export interface CreateAppPayload {
 
 export interface AddCredentialsPayload {
   platform_id: string;
-  credentials: PlatformCredentialFields;
+  client_id: string;
+  client_secret: string;
+  client_meta?: PlatformClientMeta;
+}
+
+export interface GenerateCredentialsResponse {
+  client_id: string;
+  client_secret: string;
 }
 
 
