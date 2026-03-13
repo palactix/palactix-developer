@@ -56,7 +56,7 @@ export const IntegrationCard = ({ appId, integration, onEdit }: IntegrationCardP
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/40 p-4 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/60 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center overflow-hidden shrink-0">
+          <div className="w-10 h-10  flex items-center justify-center overflow-hidden shrink-0">
             <PlatformLogo platform={integration.platform} />
           </div>
           <div className="min-w-0">

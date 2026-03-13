@@ -3,21 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LucideIcon } from "lucide-react";
+import { ExternalLink, LucideIcon } from "lucide-react";
 
 type NavItem = {
   name: string;
   href: string;
   icon: LucideIcon;
+  exact?: boolean;
+  target?: string;
 };
 
 type NavigationGroupProps = {
   title: string;
+  groupId: string;
   items: NavItem[];
   isCollapsed?: boolean;
 };
 
-export const NavigationGroup = ({ title, items, isCollapsed }: NavigationGroupProps) => {
+export const NavigationGroup = ({ title, groupId, items, isCollapsed }: NavigationGroupProps) => {
   const pathname = usePathname();
 
   return (
@@ -29,17 +32,20 @@ export const NavigationGroup = ({ title, items, isCollapsed }: NavigationGroupPr
       )}
       <ul className="space-y-0.5">
         {items.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <li key={item.name}>
               <Link
                 href={item.href}
+                target={item.target}
                 className="relative flex items-center w-full min-h-9 px-3 gap-3 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
               >
                 {isActive && (
                   <motion.div
-                    layoutId="sidebar-active-pill"
+                    layoutId={`${groupId}-active-pill`}
                     className="absolute inset-0 bg-zinc-100 dark:bg-zinc-800 rounded-lg -z-10"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -56,6 +62,9 @@ export const NavigationGroup = ({ title, items, isCollapsed }: NavigationGroupPr
                   <span className={`truncate z-10 ${isActive ? "font-medium text-zinc-900 dark:text-zinc-100" : ""}`}>
                     {item.name}
                   </span>
+                )}
+                {item.target === "_blank"  && (
+                  <ExternalLink className={`w-3 h-3 shrink-0 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors`} />
                 )}
               </Link>
             </li>

@@ -22,9 +22,9 @@ import Link from "next/link";
 import { AuthUser } from "@/features/auth/auth.types";
 
 const GLOBAL_NAV = [
-  { name: "All Apps", href: "/developer/apps", icon: Grid },
+  { name: "All Apps", href: "/developer/apps", icon: Grid, exact: true },
   { name: "Documentation", href: "/docs", icon: BookOpen },
-  { name: "Support", href: "/developer/support", icon: LifeBuoy },
+  { name: "Support", href: "/contact-us", icon: LifeBuoy, target: "_blank" },
 ];
 
 export const Sidebar = ({
@@ -47,7 +47,7 @@ export const Sidebar = ({
     { name: "Logs", href: appId ? `/developer/apps/${appId}/logs` : "/developer/apps", icon: Activity },
     { name: "Rate Limits", href: appId ? `/developer/apps/${appId}/rate-limits` : "/developer/apps", icon: ShieldAlert },
     { name: "Users", href: appId ? `/developer/apps/${appId}/users` : "/developer/apps", icon: Users },
-    { name: "Settings", href: appId ? `/developer/apps/${appId}/settings` : "/developer/apps", icon: Settings },
+    // { name: "Settings", href: appId ? `/developer/apps/${appId}/settings` : "/developer/apps", icon: Settings },
   ];
 
   useEffect(() => {
@@ -104,9 +104,13 @@ export const Sidebar = ({
 
       {/* Middle */}
       <div className="flex-1 overflow-y-auto px-3 py-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
-        <NavigationGroup title="App" items={appNav} isCollapsed={isCollapsed} />
-        <div className="my-2 border-t border-zinc-200/50 dark:border-zinc-800/50 mx-3" />
-        <NavigationGroup title="Global" items={GLOBAL_NAV} isCollapsed={isCollapsed} />
+        {appId && (
+          <>
+            <NavigationGroup groupId="app" title="App" items={appNav} isCollapsed={isCollapsed} />
+            <div className="my-2 border-t border-zinc-200/50 dark:border-zinc-800/50 mx-3" />
+          </>
+        )}
+        <NavigationGroup groupId="global" title="Global" items={GLOBAL_NAV} isCollapsed={isCollapsed} />
       </div>
 
       {/* Bottom */}
@@ -114,14 +118,14 @@ export const Sidebar = ({
         <div className="px-1 py-2">
           {!isCollapsed ? (
             <div className="flex items-center gap-3">
-               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 shrink-0" />
+               <div className="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 shrink-0" />
                <div className="flex-1 overflow-hidden">
                  <p className="text-sm font-medium truncate text-zinc-900 dark:text-zinc-100">{ user.name}</p>
                  <p className="text-xs text-zinc-500 truncate">{ user.email}</p>
                </div>
             </div>
           ) : (
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 mx-auto" />
+            <div className="w-8 h-8 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 mx-auto" />
           )}
         </div>
         
