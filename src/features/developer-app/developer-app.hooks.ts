@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AddCredentials, createApp, generateAppCredentials, listApps, showApp, updateCredentials } from "./developer-app.api";
+import { AddCredentials, createApp, generateAppCredentials, getVerifyOAuthUrl, listApps, showApp, updateCredentials } from "./developer-app.api";
 import { AddCredentialsPayload, CreateAppPayload } from "./developer-app.types";
 import { notify } from "@/shared/notifications/notifier";
 
@@ -89,6 +89,16 @@ export const useGenerateAppCredentials = () => {
     },
     onError: () => {
       notify.error("Failed to generate app credentials");
+    },
+  });
+};
+
+export const useVerifyIntegration = () => {
+  return useMutation({
+    mutationFn: ({ appId, integrationId }: { appId: string; integrationId: string }) =>
+      getVerifyOAuthUrl(appId, integrationId),
+    onError: () => {
+      notify.error("Failed to get verification URL. Please try again.");
     },
   });
 };

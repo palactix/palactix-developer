@@ -115,6 +115,7 @@ export const AppDashboard = ({ appId }: { appId: string }) => {
                   {app.integrations.map((integration: PlatformIntegration) => (
                     <IntegrationCard
                       key={integration.id}
+                      appId={app.id}
                       integration={integration}
                       onEdit={(item) => {
                         setEditingIntegration(item);

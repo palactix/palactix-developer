@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import { DeveloperAppResponse, DeveloperAppsResponse, CreateAppPayload, AddCredentialsPayload, DeveloperAppInfoResponse, AddCredentialResponse, GenerateCredentialsResponse } from "./developer-app.types";
+import { DeveloperAppResponse, DeveloperAppsResponse, CreateAppPayload, AddCredentialsPayload, DeveloperAppInfoResponse, AddCredentialResponse, GenerateCredentialsResponse, VerifyIntegrationResponse } from "./developer-app.types";
 
 // ================= API FUNCTIONS =================
 
@@ -43,4 +43,8 @@ export const generateAppCredentials = async (appId: string): Promise<GenerateCre
    return apiClient<GenerateCredentialsResponse>(`/developer/apps/${appId}/generate-credentials`, {
       method: "POST",
    });
+}
+
+export const getVerifyOAuthUrl = async (appId: string, integrationId: string): Promise<VerifyIntegrationResponse> => {
+   return apiClient<VerifyIntegrationResponse>(`/developer/apps/${appId}/integrations/${integrationId}/verify`);
 }

@@ -76,5 +76,6 @@ export interface GenerateCredentialsResponse {
   client_secret: string;
 }
 
+export type VerifyIntegrationResponse = string;
 
-export type AddCredentialResponse = PlatformIntegration
+export type AddCredentialResponse = PlatformIntegration;
