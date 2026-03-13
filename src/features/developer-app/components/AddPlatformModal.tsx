@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowLeft, Loader2 } from "lucide-react";
+import { X, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { usePlatforms } from "@/features/platform/platform.hooks";
 import { usePlatformLogo } from "@/features/platform/usePlatformLogo";
 import type { Platform } from "@/features/platform/platform.types";
 import { useAddCredentials, useUpdateCredentials } from "../developer-app.hooks";
-import type { AddCredentialsPayload, PlatformIntegration } from "../developer-app.types";
+import { AppCredStatus, type AddCredentialsPayload, type PlatformIntegration } from "../developer-app.types";
 
 type ModalProps = {
   isOpen: boolean;
@@ -67,9 +67,11 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
   const { mutateAsync: updateCredentials } = useUpdateCredentials();
 
   const isEditMode = !!editingIntegration;
+  const isVerifiedEdit = editingIntegration?.status === AppCredStatus.VERIFIED;
 
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditFormUnlocked, setIsEditFormUnlocked] = useState(false);
 
   const {
     register,
@@ -85,6 +87,7 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
 
   const resetAndClose = () => {
     setSelectedPlatform(editingIntegration?.platform ?? null);
+    setIsEditFormUnlocked(false);
     reset();
     onClose();
   };
@@ -100,6 +103,7 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
       const existingClientId = editingIntegration.client_id ?? "";
       const existingClientSecret = editingIntegration.client_secret ?? "";
 
+      setIsEditFormUnlocked(editingIntegration.status !== AppCredStatus.VERIFIED);
       setSelectedPlatform(editingIntegration.platform);
       reset({
         client_id: existingClientId,
@@ -109,6 +113,7 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
     }
 
     setSelectedPlatform(null);
+    setIsEditFormUnlocked(false);
     reset({
       client_id: "",
       client_secret: "",
@@ -238,12 +243,39 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                     >
                       <div className="space-y-4">
                         <div className="space-y-2">
+
+                          {isVerifiedEdit && !isEditFormUnlocked && (
+                            <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10 p-3">
+                              <div className="flex items-start gap-2">
+                                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" />
+                                <div className="space-y-2">
+                                  <p className="text-xs text-amber-900 dark:text-amber-100">
+                                    Updating verified credentials will unlink your clients&apos; connected accounts. They must re-authorize again.
+                                  </p>
+                                  <p className="text-xs text-amber-800 dark:text-amber-200">
+                                    After saving, this integration will move back to pending status for re-verification.
+                                  </p>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 border-amber-300 text-amber-900 hover:bg-amber-100 dark:border-amber-400/40 dark:text-amber-100 dark:hover:bg-amber-500/20"
+                                    onClick={() => setIsEditFormUnlocked(true)}
+                                  >
+                                    I understand, enable editing
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
                           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                             <Label htmlFor="redirect_url">Redirect URL</Label>
                             <p className="text-[11px] font-medium text-amber-700 dark:text-amber-300">
                               Paste this redirect URL to your platform app.
                             </p>
                           </div>
+
                           <div className="flex items-center gap-2">
                             <Input
                               id="redirect_url"
@@ -269,6 +301,7 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                             autoComplete="new-password"
                             placeholder="E.g. 1234567890"
                             className="h-11"
+                            disabled={isVerifiedEdit && !isEditFormUnlocked}
                             {...register("client_id", { required: true })}
                           />
                           {errors.client_id && <p className="text-xs text-red-500">Platform App ID is required</p>}
@@ -280,13 +313,18 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
                             placeholder="Enter the secret key"
                             className="h-11"
                             autoComplete="new-password"
+                            disabled={isVerifiedEdit && !isEditFormUnlocked}
                             {...register("client_secret", { required: true })}
                           />
                           {errors.client_secret && <p className="text-xs text-red-500">Platform Secret is required</p>}
                         </div>
                       </div>
                       <div className="border-t border-zinc-100 dark:border-zinc-800/50 pt-4">
-                        <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
+                        <Button
+                          type="submit"
+                          className="w-full h-11"
+                          disabled={isSubmitting || (isVerifiedEdit && !isEditFormUnlocked)}
+                        >
                           {isSubmitting ? (
                             <>
                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
