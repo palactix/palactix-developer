@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { loginRoute } from "@/features/auth/login";
+import { Logo } from "@/shared/Logo";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -30,9 +31,7 @@ export function Navbar() {
       <Container className="py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
-            </div>
+            <Logo />
             <span className="text-lg font-semibold">Palactix</span>
           </Link>
         </div>
