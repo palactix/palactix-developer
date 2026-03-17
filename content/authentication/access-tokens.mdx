@@ -1,12 +1,123 @@
 ---
 title: Access Tokens
-description: Understand access tokens used for authenticated API requests.
+description: Generate an access token using your app credentials to authenticate API requests.
 ---
 
 # Access Tokens
 
-This section is currently under development.
+Use your app credentials to generate a Palactix API access token.
 
-> 🚧 Coming Soon
+> **Base URL:** See [Base URL](/docs/api-reference/base-url)
 
-More detailed documentation and examples will be added in an upcoming release.
+---
+
+## Endpoint
+
+```bash
+POST {BASE_URL}/oauth/token
+```
+
+---
+
+### Headers
+```js
+Authorization: Basic BASE64(client_id:client_secret)
+Content-Type: application/x-www-form-urlencoded
+```
+
+---
+
+### Body
+
+```js
+grant_type=client_credentials
+```
+
+---
+
+### Example Request
+
+```bash
+curl -X POST {BASE_URL}/oauth/token \
+  -H "Authorization: Basic BASE64(client_id:client_secret)" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials"
+```
+
+---
+
+### Response
+```json
+{
+  "access_token": "plx_xxx",
+  "token_type": "Bearer",
+  "expires_in": 31536000
+}
+```
+
+---
+
+## How It Works
+	1.	Your credentials are verified
+	2.	Palactix identifies your app
+	3.	A token is generated for your app admin
+	4.	Previous tokens are revoked
+
+---
+
+## Using the Token
+
+Include the token in all API requests:
+
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+
+---
+
+## Errors
+
+#### 400 – Invalid Request
+```json
+{
+  "error": "invalid_authorization_header",
+  "message": "Invalid OAuth request format."
+}
+```
+
+---
+
+#### 401 – Invalid Credentials
+```json
+{
+  "error": "invalid_client_id",
+  "message": "Client authentication failed."
+}
+```
+
+---
+
+#### 403 – App Not Active
+```json
+{
+  "error": "app_not_active",
+  "message": "App is not active."
+}
+```
+
+---
+
+#### 409 – App Not Live
+```json
+{
+  "error": "app_not_live",
+  "message": "App is not live yet."
+}
+```
+
+---
+
+Related
+	- [Create Developer App](/docs/getting-started/create-developer-app)
+	- Connections 
+
+---

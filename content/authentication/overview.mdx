@@ -1,12 +1,77 @@
 ---
-title: BYO OAuth Model
-description: Learn how the bring-your-own OAuth model works in Palactix.
+title: Authentication Overview
+description: Learn how Palactix authentication works using your own OAuth apps and access tokens.
 ---
 
-# BYO OAuth Model
+# Authentication Overview
 
-This section is currently under development.
+Palactix uses a **Bring Your Own OAuth (BYO)** model.
 
-> 🚧 Coming Soon
+Instead of using shared platform credentials, you authenticate using **your own developer apps** and generate a Palactix access token.
 
-More detailed documentation and examples will be added in an upcoming release.
+---
+
+## How Authentication Works
+
+1. You create a developer app in Palactix  
+2. You add your platform OAuth credentials  
+3. You generate an API access token  
+4. You use that token to call Palactix APIs  
+
+---
+
+## Bring Your Own OAuth (BYO)
+
+Palactix does not provide platform OAuth apps.
+
+You must use your own:
+
+- Meta App (Instagram / Facebook)
+- LinkedIn App
+- X (Twitter) App
+- TikTok App
+
+### Why this matters
+
+- You own your client relationships  
+- Your branding appears on consent screens  
+- No vendor lock-in  
+- Platform limits are isolated to your app  
+
+---
+
+## Access Token
+
+All API requests require a Bearer token.
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+---
+
+What This Token Represents
+
+The access token is issued for:
+	- Your developer app
+	- Your app’s admin user
+
+It is used to:
+	- Generate OAuth links
+	- Fetch connected accounts
+	- Call all Palactix APIs
+
+---
+
+Important Notes
+	- Tokens are long-lived
+	- Generating a new token revokes old tokens
+	- Tokens are scoped to your app
+
+---
+
+Next Step
+
+[Generate Access Token](/docs/authentication/access-tokens)
+
+---
