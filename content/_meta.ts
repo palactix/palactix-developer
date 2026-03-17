@@ -1,8 +1,8 @@
 const meta = {
    "index": "Introduction",
    "getting-started": "Getting Started",
-   "authentication": "Authentication & Ownership",
-   "core-concepts": "Core Concepts",
+   "authentication": "Authentication",
+   
    "publishing": "Publishing API",
    "api-reference": "API Reference",
    "debugging": "Debugging & Logs",

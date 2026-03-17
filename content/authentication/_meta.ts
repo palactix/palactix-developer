@@ -1,6 +1,5 @@
-export default {
-  "byo-oauth-model": "BYO OAuth Model",
+const meta = {
+  "overview": "Overview",
   "access-tokens": "Access Tokens",
-  "token-lifecycle": "Token Lifecycle",
-  "security-considerations": "Security Considerations"
 }
+export default meta;

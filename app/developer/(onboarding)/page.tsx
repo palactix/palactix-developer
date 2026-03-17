@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { ShieldCheck, Briefcase, Network, ArrowRight, Check, X, Code } from 'lucide-react';
 import { Bot, Zap, Building2 } from 'lucide-react';
+import { PlatformsSection } from '@/components/home/PlatformsSection';
+import { Logo } from '@/shared/Logo';
 
 export default function DeveloperLandingPage() {
   return (
@@ -9,9 +11,10 @@ export default function DeveloperLandingPage() {
       <header className="container mx-auto px-6 py-6 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2">
           {/* 2D Flat Graphic Logo */}
-          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
+          {/* <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
             <span className="font-bold text-primary-foreground text-xl">P</span>
-          </div>
+          </div> */}
+          <Logo />
           <span className="text-xl font-bold tracking-tight">Palactix</span>
         </div>
         <nav>
@@ -89,17 +92,8 @@ Authorization: Bearer your_api_token
           </div>
         </section>
 
-        {/* 4. Platform Support */}
-        <section className="py-12 border-y border-border flex flex-wrap justify-center items-center gap-8 lg:gap-16 opacity-60 grayscale filter hover:grayscale-0 transition-all duration-500">
-          {['Meta', 'Instagram', 'LinkedIn', 'TikTok', 'X', 'Reddit'].map((platform) => (
-            <div key={platform} className="text-lg lg:text-xl font-bold tracking-wider text-muted-foreground hover:text-foreground transition-colors">
-              {platform}
-            </div>
-          ))}
-          <div className="text-sm font-medium tracking-wider text-muted-foreground italic">
-            + More Coming
-          </div>
-        </section>
+       
+        <PlatformsSection />
 
         {/* 2. Architecture Section (Sovereign Infrastructure) */}
         {/* Architecture Section */}
@@ -381,7 +375,7 @@ Authorization: Bearer your_api_token
 
             <div className="text-sm text-muted-foreground mt-6">
             Pay-as-you-go pricing • No subscriptions • Free tier available
-            <Link href="/docs/pricing" className="text-primary hover:underline ml-2">
+            <Link href="/docs/getting-started/pricing" className="text-primary hover:underline ml-2">
               View Pricing →
             </Link>
           </div>
