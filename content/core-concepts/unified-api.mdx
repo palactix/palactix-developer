@@ -1,0 +1,135 @@
+---
+title: Unified Social Media API
+description: Understand how Palactix provides a unified API for publishing and managing social media across multiple platforms.
+---
+
+# Unified Social Media API
+
+Palactix provides a **unified social media API** to connect, manage, and publish content across multiple platforms using a single interface.
+
+Instead of building separate integrations for each platform, you interact with one consistent API.
+
+---
+
+## What “Unified API” Means
+
+A unified API allows you to:
+
+- Use one endpoint for multiple platforms  
+- Send a single request format  
+- Handle platform differences automatically  
+
+---
+
+## Supported Platforms
+
+Palactix currently supports:
+
+- Instagram  
+- Facebook  
+- LinkedIn  
+- X (Twitter)  
+- TikTok  
+- YouTube  
+
+---
+
+## Without a Unified API
+
+If you build integrations manually:
+
+- Each platform has different OAuth flows  
+- Each API has different request formats  
+- Media upload works differently everywhere  
+- Rate limits vary per platform  
+- APIs change frequently  
+
+You end up maintaining multiple systems.
+
+---
+
+## With Palactix
+
+You use one API:
+
+```bash
+POST /v1/publish
+```
+
+And Palactix handles:
+
+- Platform-specific formatting  
+- OAuth token usage  
+- Media handling differences  
+- Rate limiting and retries  
+
+---
+
+## Example
+
+You send one request:
+
+```json
+{
+  "account_ids": ["acc_1", "acc_2"],
+  "content": {
+    "text": "New product launch 🚀"
+  }
+}
+```
+
+Palactix automatically adapts it for:
+
+- Instagram  
+- LinkedIn  
+- TikTok  
+- Any supported platform  
+
+---
+
+## Bring Your Own OAuth (BYO)
+
+Unlike traditional tools, Palactix uses your own OAuth apps.
+
+This means:
+
+- Tokens belong to your application  
+- Your branding appears in consent screens  
+- No shared app limits  
+- No vendor lock-in  
+
+---
+
+## When to Use a Unified API
+
+Use Palactix if you are building:
+
+- Social media automation tools  
+- Scheduling platforms  
+- Marketing SaaS products  
+- Analytics dashboards  
+- Internal publishing tools  
+
+---
+
+## Key Benefits
+
+- Faster development (single integration)  
+- Lower maintenance cost  
+- Consistent API behavior  
+- Platform-agnostic architecture  
+
+---
+
+## Summary
+
+Palactix acts as a **unified layer between your application and social platforms**.
+
+You build once.  
+Palactix handles the complexity.
+
+---
+
+## Next Step
+
+[Get Start](/docs/getting-started/quick-start)

@@ -1,0 +1,119 @@
+---
+title: Bring Your Own OAuth (BYO)
+description: Understand the BYO OAuth model and how Palactix lets you use your own platform apps and tokens.
+---
+
+# Bring Your Own OAuth (BYO)
+
+Palactix follows a **Bring Your Own OAuth (BYO)** model.
+
+This means you use your own platform developer apps instead of relying on shared credentials.
+
+---
+
+## What BYO OAuth Means
+
+With Palactix:
+
+- You create apps on each platform (Meta, LinkedIn, etc.)  
+- You provide your own `client_id` and `client_secret`  
+- OAuth tokens are issued to your app, not Palactix  
+
+---
+
+## Why This Matters
+
+### Ownership
+
+- You own your client connections  
+- Tokens belong to your infrastructure  
+- You can move away from Palactix anytime  
+
+---
+
+### Branding
+
+- Users see your app name during OAuth  
+- Not a third-party tool  
+- Builds trust with clients  
+
+---
+
+### Isolation
+
+- Your rate limits are not shared  
+- Your app reputation is independent  
+- Other users cannot affect your account  
+
+---
+
+## Traditional Model (Without BYO)
+
+Most tools use shared OAuth apps:
+
+- All users connect through the same app  
+- Tokens are controlled by the vendor  
+- Rate limits are shared  
+- High vendor lock-in  
+
+---
+
+## Palactix Model (BYO)
+
+With Palactix:
+
+- Each developer uses their own apps  
+- Tokens are stored securely per app  
+- Full control over credentials  
+- No shared dependency  
+
+---
+
+## How It Works in Palactix
+
+1. Create a developer app in Palactix  
+2. Add platform credentials (client_id, client_secret)  
+3. Generate access token  
+4. Connect user accounts via OAuth  
+
+---
+
+## Example
+
+During OAuth:
+
+```bash
+User sees:
+"Continue with Your App Name"
+```
+
+The user authorizes **your app**, not Palactix.
+
+---
+
+## When to Use BYO OAuth
+
+BYO OAuth is ideal if you:
+
+- Build SaaS products for clients  
+- Manage multiple client accounts  
+- Need long-term ownership of data  
+- Want to avoid platform dependency  
+
+---
+
+## Summary
+
+BYO OAuth ensures that:
+
+- You own the relationship  
+- You control the credentials  
+- You are not locked into a vendor  
+
+Palactix provides the infrastructure, while you retain control.
+
+---
+
+## Next Step
+
+[Generate OAuth Redirect URL](/docs/api-reference/oauth-connect)

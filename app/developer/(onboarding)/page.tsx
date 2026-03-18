@@ -33,7 +33,7 @@ export default function DeveloperLandingPage() {
               <span className="text-primary">Bring Your Own OAuth.</span>
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground max-w-xl leading-relaxed">
-              One REST API to publish across Meta, LinkedIn, TikTok, X, and Reddit. You own the App IDs and the tokens.
+              One REST API to publish across Meta, LinkedIn, TikTok, X, and Youtube. You own the App IDs and the tokens.
             </p>
             
             <div className="flex flex-col gap-3 w-full sm:w-auto">

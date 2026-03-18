@@ -3,10 +3,49 @@ title: API Authentication
 description: Learn how to authenticate requests to the Palactix API.
 ---
 
-# API Authentication
+# Authentication
 
-This section is currently under development.
+All API requests must include a Bearer token in the `Authorization` header.
 
-> 🚧 Coming Soon
+---
 
-More detailed documentation and examples will be added in an upcoming release.
+## Header Format
+
+```bash
+Authorization: Bearer plx_abc123...
+```
+
+---
+
+## Example Request
+
+```bash
+curl -X GET /v1/accounts \
+  -H "Authorization: Bearer plx_abc123..."
+```
+
+---
+
+## Notes
+
+- Token must be valid and not expired  
+- Missing or invalid tokens will return `401 Unauthorized`  
+- Always send token in header, not in query params  
+
+---
+
+## Common Errors
+
+### 401 Unauthorized
+
+Occurs when:
+
+- Token is missing  
+- Token is invalid  
+- Token is expired  
+
+---
+
+## Next Step
+
+[OAuth Token API](/docs/api-reference/generate-access-token)

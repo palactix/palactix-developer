@@ -1,12 +1,48 @@
 ---
 title: Base URL
-description: Find the base URL and environment information for Palactix APIs.
+description: Base URL for all Palactix API requests.
 ---
 
 # Base URL
 
-This section is currently under development.
+All API requests must be made to the following base URL.
 
-> 🚧 Coming Soon
+---
 
-More detailed documentation and examples will be added in an upcoming release.
+## Production
+
+```bash
+https://api.palactix.com
+```
+
+---
+
+## Versioning
+
+Palactix APIs are versioned via the URL.
+
+```bash
+https://api.palactix.com/v1
+```
+
+---
+
+## Full Endpoint Example
+
+```bash
+POST https://api.palactix.com/v1/oauth/token
+```
+
+---
+
+## Notes
+
+- Always prefix endpoints with `/v1`  
+- Future versions (`/v2`, `/v3`) will be released without breaking existing integrations  
+- Do not hardcode internal service URLs  
+
+---
+
+## Next Step
+
+[Authentication →](/docs/api-reference/authentication)

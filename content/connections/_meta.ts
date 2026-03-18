@@ -1,5 +1,5 @@
 const meta = {
-  overview: "Overview",
+  index: "Overview",
   "connect-account": "Connect Account",
   "connection-flow": "Connection Flow",
   "fetch-accounts": "Fetch Connected Accounts",

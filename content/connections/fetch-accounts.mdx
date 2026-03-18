@@ -1,12 +1,72 @@
 ---
-title: BYO OAuth Model
-description: Learn how the bring-your-own OAuth model works in Palactix.
+title: Fetch Connected Accounts
+description: Retrieve accounts linked during a connection.
 ---
 
-# BYO OAuth Model
+# Fetch Connected Accounts
 
-This section is currently under development.
+After a connection is completed, use the `connection_id` to fetch linked accounts.
 
-> 🚧 Coming Soon
+---
 
-More detailed documentation and examples will be added in an upcoming release.
+## API Reference
+
+[Get Connection Accounts →](/docs/api-reference/connection-accounts)
+
+---
+
+## Example Response
+
+```json
+{
+  "connection_id": "conn_abc123",
+  "status": "success",
+  "accounts": [
+    {
+      "id": "acc_1",
+      "platform_id": 1,
+      "username": "my_account",
+      "name": "My Page"
+    }
+  ]
+}
+
+```
+
+---
+
+## Handling Multiple Accounts
+
+Some platforms return multiple accounts:
+
+- Facebook → Pages  
+- Instagram → Business accounts  
+
+You should:
+
+- Let the user select an account  
+- Store the selected account ID  
+
+---
+
+## Handling Pending State
+
+If status is `pending`:
+
+- Wait for OAuth completion  
+- Retry the request  
+
+---
+
+## Handling Errors
+
+If status is `failed`:
+
+- Show error to the user  
+- Allow retry  
+
+---
+
+## Next Step
+
+[API Reference →](/docs/api-reference)

@@ -1,12 +1,62 @@
 ---
-title: Response Format
-description: Understand the standard response format used by the API.
+title: Connection Flow
+description: Step-by-step flow of how OAuth connections work in Palactix.
 ---
 
-# Response Format
+# Connection Flow
 
-This section is currently under development.
+This explains what happens internally during a connection.
 
-> 🚧 Coming Soon
+---
 
-More detailed documentation and examples will be added in an upcoming release.
+## Full Flow
+
+```
+1. Your backend requests OAuth URL
+2. Palactix creates connection_id
+3. User is redirected to platform
+4. User grants permission
+5. Platform redirects back
+6. Palactix exchanges tokens
+7. Accounts are fetched
+8. Connection marked as success
+
+```
+
+---
+
+## Behind the Scenes
+
+During this process:
+
+- OAuth tokens are securely stored  
+- Platform APIs are called  
+- Multiple accounts may be discovered  
+- Data is normalized  
+
+---
+
+## Failure Cases
+
+Connection may fail if:
+
+- User cancels OAuth  
+- Invalid credentials  
+- Platform errors  
+- Permission issues  
+
+---
+
+## Connection Status
+
+| Status   | Meaning              |
+|----------|----------------------|
+| pending  | OAuth not completed  |
+| success  | Accounts fetched     |
+| failed   | Error occurred       |
+
+---
+
+## Next Step
+
+[Fetch Connected Accounts](/docs/connections/fetch-accounts)

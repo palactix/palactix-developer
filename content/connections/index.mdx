@@ -1,0 +1,86 @@
+---
+title: Overview
+description: Understand how account connections work in Palactix.
+---
+
+# Account Connections
+
+A **connection** represents a single OAuth session between your app and a social platform.
+
+It links a user’s social account to your application.
+
+---
+
+## Why Connections Exist
+
+Palactix introduces a connection layer instead of returning accounts directly.
+
+This allows:
+
+- Handling multiple accounts (e.g. Facebook pages)  
+- Tracking connection status (pending, success, failed)  
+- Supporting async processing  
+
+---
+
+## Connection Flow
+
+```
+Create OAuth URL
+   ↓
+User authorizes access
+   ↓
+Palactix processes tokens
+   ↓
+Connection is created
+   ↓
+Fetch accounts using connection_id
+```
+
+---
+
+## Key Concepts
+
+### connection_id
+
+- Unique identifier for each OAuth session  
+- Returned when generating OAuth URL  
+- Used to fetch connected accounts  
+
+---
+
+### external_user_id (user_id)
+
+- Your internal user identifier  
+- Passed during OAuth initiation  
+- Used to map users inside Palactix  
+
+---
+
+### status
+
+- `pending` → OAuth not completed  
+- `success` → Accounts linked  
+- `failed` → Error during connection  
+
+---
+
+## Why Not Return Accounts Directly?
+
+Some platforms:
+
+- Return multiple accounts  
+- Require additional API calls  
+- Have async processing  
+
+The connection model ensures:
+
+- Consistent response format  
+- Better error handling  
+- Scalable architecture  
+
+---
+
+## Next Step
+
+[Connect Account](/docs/connections/connect-account)

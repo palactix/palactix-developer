@@ -1,0 +1,218 @@
+---
+title: Generate OAuth Redirect URL
+description: Generate a platform-specific OAuth URL to connect user accounts.
+---
+
+# Generate OAuth Redirect URL
+
+Generate a redirect URL to initiate OAuth connection for a user.
+
+You must redirect your user to this URL to allow them to connect their social account.
+
+---
+
+## Endpoint
+
+```bash
+GET /v1/oauth/{platform}/connect
+```
+
+---
+
+## Headers
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+---
+
+## Query Parameters
+
+| Parameter      | Type   | Required | Description |
+|----------------|--------|----------|-------------|
+| user_id        | string | Yes      | Your internal user identifier |
+| redirect_url   | string | Yes      | URL where user will be redirected after OAuth |
+| name           | string | No       | User name for reference (stored in Palactix) |
+| email          | string | No       | User email for reference (stored in Palactix) |
+
+---
+
+## Supported Platforms
+
+| Platform   | Slug        |
+|------------|-------------|
+| Instagram  | instagram   |
+| Facebook   | facebook    |
+| X (Twitter)| x           |
+| LinkedIn   | linkedin    |
+| YouTube    | youtube     |
+| TikTok     | tiktok      |
+
+---
+
+## Response
+
+```json
+{
+  "redirect_url": "https://platform.com/oauth/authorize?...",
+  "connection_id": "conn_abc123"
+}
+```
+
+---
+
+## cURL Example
+
+```bash
+curl -X GET "https://api.palactix.com/v1/oauth/instagram/connect?user_id=123&redirect_url=https://yourapp.com/callback" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+## How It Works
+
+1. Call this API to generate OAuth URL  
+2. Redirect your user to `redirect_url`  
+3. User authorizes your app  
+4. Palactix processes the connection  
+5. Use `connection_id` to fetch accounts  
+
+---
+
+## OAuth Redirect Response
+
+After the user completes the OAuth flow, Palactix redirects the user to your provided `redirect_url`.
+
+Query parameters are appended to indicate the result of the connection.
+
+---
+
+### Success Response
+
+```bash
+https://yourapp.com/callback?connection_id=conn_abc123&status=success
+```
+
+---
+
+### Failed Response
+
+```bash
+https://yourapp.com/callback?connection_id=conn_abc123&status=failed&error=access_denied
+```
+
+---
+
+## Parameters
+
+| Parameter       | Type   | Description |
+|----------------|--------|-------------|
+| connection_id  | string | Unique connection identifier |
+| status         | string | `success` or `failed` |
+| error          | string | Error code (only present if failed) |
+
+---
+
+## How to Handle This
+
+On your frontend or backend:
+
+- Read `connection_id` from query params  
+- Call the connection accounts API  
+- Show connected accounts to the user  
+
+---
+
+## Important Notes
+
+- Always rely on `connection_id` to fetch actual data  
+- Do not trust redirect data as final state  
+- Use API to get authoritative results  
+
+---
+
+## Errors
+
+### 400 — Missing Parameters
+
+Occurs when required query parameters are not provided.
+
+**Error:**
+- `MISSING_PARAMETERS`
+
+**When this happens:**
+- `user_id` is missing  
+- `redirect_url` is missing  
+
+**How to fix:**
+- Ensure both parameters are included  
+- Validate input before calling the API  
+
+---
+
+### 404 — Platform Not Supported
+
+Occurs when the platform slug is invalid or not supported.
+
+**Error:**
+- `PLATFORM_NOT_FOUND`
+
+**When this happens:**
+- Incorrect platform slug  
+- Platform not supported  
+
+**How to fix:**
+- Use a valid platform slug from the list above  
+- Double-check spelling  
+
+---
+
+### 400 — Platform Credentials Not Configured
+
+Occurs when OAuth credentials are not set for the selected platform.
+
+**Error:**
+- `CREDENTIALS_NOT_FOUND`
+
+**When this happens:**
+- No credentials added for the platform  
+- Credentials are incomplete  
+
+**How to fix:**
+- Add platform credentials in developer dashboard  
+- Ensure credentials are verified  
+
+---
+
+### 500 — Redirect URL Generation Failed
+
+Occurs when Palactix fails to generate the OAuth URL.
+
+**Error:**
+- `REDIRECT_URL_ERROR`
+
+**When this happens:**
+- Internal error  
+- Invalid configuration  
+- Unexpected failure  
+
+**How to fix:**
+- Retry the request  
+- Verify credentials  
+- Contact support if issue persists  
+
+---
+
+## Debugging Tips
+
+- Always store `connection_id`  
+- Log request parameters  
+- Ensure access token is valid  
+
+---
+
+## Next Step
+
+[Fetch Connected Accounts](/docs/api-reference/connection-accounts)

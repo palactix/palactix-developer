@@ -1,123 +1,64 @@
 ---
 title: Access Tokens
-description: Generate an access token using your app credentials to authenticate API requests.
+description: Understand how access tokens work in Palactix APIs.
 ---
 
 # Access Tokens
 
-Use your app credentials to generate a Palactix API access token.
+Access tokens are used to authenticate requests to the Palactix API.
 
-> **Base URL:** See [Base URL](/docs/api-reference/base-url)
-
----
-
-## Endpoint
-
-```bash
-POST {BASE_URL}/oauth/token
-```
-
----
-
-### Headers
-```js
-Authorization: Basic BASE64(client_id:client_secret)
-Content-Type: application/x-www-form-urlencoded
-```
-
----
-
-### Body
-
-```js
-grant_type=client_credentials
-```
-
----
-
-### Example Request
-
-```bash
-curl -X POST {BASE_URL}/oauth/token \
-  -H "Authorization: Basic BASE64(client_id:client_secret)" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=client_credentials"
-```
-
----
-
-### Response
-```json
-{
-  "access_token": "plx_xxx",
-  "token_type": "Bearer",
-  "expires_in": 31536000
-}
-```
+Every API request must include a valid access token.
 
 ---
 
 ## How It Works
-	1.	Your credentials are verified
-	2.	Palactix identifies your app
-	3.	A token is generated for your app admin
-	4.	Previous tokens are revoked
+
+1. You generate a token using your app credentials  
+2. Palactix issues a Bearer token  
+3. You include this token in API requests  
 
 ---
 
-## Using the Token
+## Example Usage
 
-Include the token in all API requests:
-
-Authorization: Bearer YOUR_ACCESS_TOKEN
-
-
----
-
-## Errors
-
-#### 400 – Invalid Request
-```json
-{
-  "error": "invalid_authorization_header",
-  "message": "Invalid OAuth request format."
-}
+```bash
+Authorization: Bearer plx_abc123...
 ```
 
 ---
 
-#### 401 – Invalid Credentials
-```json
-{
-  "error": "invalid_client_id",
-  "message": "Client authentication failed."
-}
-```
+## Token Properties
+
+- Type: Bearer token  
+- Scope: Full API access (`*`)  
+- Expiry: Long-lived (default: 1 year)  
 
 ---
 
-#### 403 – App Not Active
-```json
-{
-  "error": "app_not_active",
-  "message": "App is not active."
-}
-```
+## Token Behavior
+
+- Only one active token per app  
+- Generating a new token revokes the old one  
+- Tokens are linked to the app admin user  
 
 ---
 
-#### 409 – App Not Live
-```json
-{
-  "error": "app_not_live",
-  "message": "App is not live yet."
-}
-```
+## When to Generate a New Token
+
+- Token expired  
+- Token compromised  
+- Secret rotated  
 
 ---
 
-Related
-	- [Create Developer App](/docs/getting-started/create-developer-app)
-	- Connections 
+## Security Best Practices
+
+- Never expose tokens in frontend code  
+- Store tokens securely (server-side)  
+- Rotate tokens periodically  
 
 ---
+
+## Get Your Token
+
+[Generate OAuth Token](/docs/api-reference/generate-access-token)
