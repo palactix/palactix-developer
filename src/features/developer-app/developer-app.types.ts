@@ -76,6 +76,9 @@ export interface GenerateCredentialsResponse {
   client_secret: string;
 }
 
-export type VerifyIntegrationResponse = string;
+export type VerifyIntegrationResponse = {
+  redirect_url: string;
+  connection_id: string;
+};
 
 export type AddCredentialResponse = PlatformIntegration;

@@ -31,7 +31,7 @@ export const IntegrationCard = ({ appId, integration, onEdit }: IntegrationCardP
       const url = await getVerifyUrl({ appId, integrationId: integration.id });
 
       const popup = window.open(
-        url,
+        url.redirect_url,
         "oauth_verify",
         "width=600,height=700,scrollbars=yes,resizable=yes,left=200,top=100",
       );
