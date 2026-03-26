@@ -1,8 +1,86 @@
 import Link from 'next/link';
-import { ShieldCheck, Briefcase, Network, ArrowRight, Check, X, Code } from 'lucide-react';
+import { ShieldCheck, Briefcase, Network, ArrowRight, Check, X, Code, Copy } from 'lucide-react';
 import { Bot, Zap, Building2 } from 'lucide-react';
 import { PlatformsSection } from '@/components/home/PlatformsSection';
 import { Logo } from '@/shared/Logo';
+
+function PublishCurlExample() {
+  //const [copied, setCopied] = useState(false)
+
+  const codeString = `curl -X POST https://api.palactix.com/v1/post/publish \\
+  -H "Authorization: Bearer YOUR_API_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "account_ids": [
+      "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+      "019d29ae-a76b-73e5-9480-2831d0e871cb"
+    ],
+    "content": "Hello world from Palactix!"
+  }'
+
+// Publishes to 2 accounts with one API call`
+
+  // const handleCopy = async () => {
+  //   await navigator.clipboard.writeText(codeString)
+  //   setCopied(true)
+
+  //   setTimeout(() => {
+  //     setCopied(false)
+  //   }, 2000)
+  // }
+
+  return (
+    <div className="relative rounded-xl overflow-hidden border border-border bg-card shadow-2xl">
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border">
+
+        {/* Mac-style dots */}
+        <div className="flex gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+        </div>
+
+        {/* Endpoint Label */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+          <Code size={14} />
+          POST /v1/post/publish
+        </div>
+
+        {/* Copy Button */}
+        {/* <button
+          onClick={handleCopy}
+          className="flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-border bg-background hover:bg-muted transition"
+        >
+          {copied ? (
+            <>
+              <Check size={14} />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy size={14} />
+              Copy
+            </>
+          )}
+        </button> */}
+
+      </div>
+
+      {/* Code Area */}
+      <div className="p-6 overflow-x-auto text-sm font-mono text-foreground/90 leading-relaxed">
+
+        <pre className="whitespace-pre">
+          <code>{codeString}</code>
+        </pre>
+
+      </div>
+
+    </div>
+  )
+}
+
 
 export default function DeveloperLandingPage() {
   return (
@@ -60,36 +138,8 @@ export default function DeveloperLandingPage() {
 
           {/* Code Window */}
          {/* Code Window - FIXED VERSION */}
-          <div className="rounded-xl overflow-hidden border border-border bg-card shadow-2xl">
-            <div className="flex items-center px-4 py-3 bg-muted/50 border-b border-border">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-              </div>
-              <div className="mx-auto flex items-center gap-2 text-xs text-muted-foreground font-mono">
-                <Code size={14} /> POST /v1/publish
-              </div>
-            </div>
-            <div className="p-6 overflow-x-auto text-sm font-mono text-foreground/90 leading-relaxed">
-    <pre><code>{`POST /v1/publish
-Authorization: Bearer your_api_token
-
-{
-  "accounts": [
-    "acc_instagram_123",
-    "acc_linkedin_456",
-    "acc_tiktok_789"
-  ],
-  "content": {
-    "text": "Shipping our new API today! 🚀",
-    "media_url": "https://cdn.example.com/launch.png"
-  }
-}
-
-→ Publishes to 3 platforms with one call`}</code></pre>
-            </div>
-          </div>
+         <PublishCurlExample />
+          
         </section>
 
        
@@ -348,7 +398,7 @@ Authorization: Bearer your_api_token
 
             <div className="text-center mt-12">
               <Link 
-                href="/docs/quickstart" 
+                href="/docs/getting-started/quick-start" 
                 className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold"
               >
                 View Complete Quickstart Guide

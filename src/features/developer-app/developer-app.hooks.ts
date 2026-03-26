@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AddCredentials, createApp, generateAppCredentials, getVerifyOAuthUrl, listApps, showApp, updateCredentials } from "./developer-app.api";
-import { AddCredentialsPayload, CreateAppPayload } from "./developer-app.types";
+import { AddCredentials, createApp, generateAppCredentials, getVerifyOAuthUrl, listApps, showApp, updateApp, updateCredentials } from "./developer-app.api";
+import { AddCredentialsPayload, CreateAppPayload, UpdateAppPayload } from "./developer-app.types";
 import { notify } from "@/shared/notifications/notifier";
 
 // ================= QUERY HOOKS =================
@@ -27,6 +27,18 @@ export const useApp = (id: string) => {
 };
 
 // ================= MUTATION HOOKS =================
+
+export const useUpdateApp = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAppPayload }) => updateApp(id, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["app", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["apps"] });
+    },
+  });
+};
 
 export const useCreateApp = () => {
   const queryClient = useQueryClient();

@@ -64,6 +64,11 @@ export interface CreateAppPayload {
   type: string;
 }
 
+export interface UpdateAppPayload {
+  name?: string;
+  logo?: File;
+}
+
 export interface AddCredentialsPayload {
   platform_id: string;
   client_id: string;
