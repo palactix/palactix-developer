@@ -1,37 +1,80 @@
 import { MetadataRoute } from "next"
+import fs from "fs"
+import path from "path"
 
 const baseUrl = "https://palactix.com"
 
-const docsPages = [
-  "/docs/introduction",
-  "/docs/getting-started/how-palactix-works",
-  "/docs/getting-started/quick-start",
-  "/docs/getting-started/create-developer-app",
-  "/docs/getting-started/configure-platform-credentials",
-  "/docs/getting-started/pricing",
+const docsDirectory = path.join(
+  process.cwd(),
+  "content"
+)
 
-  "/docs/core-concepts/unified-api",
+function getAllDocsRoutes(dir: string): string[] {
 
-  "/docs/authentication",
-  "/docs/authentication/access-tokens",
+  const entries = fs.readdirSync(dir, {
+    withFileTypes: true,
+  })
 
-  "/docs/connections",
-  "/docs/connections/connect-account",
-  "/docs/connections/connection-flow",
-  "/docs/connections/fetch-accounts",
+  let routes: string[] = []
 
-  "/docs/api-reference/base-url",
-  "/docs/api-reference/generate-access-token",
-  "/docs/api-reference/authentication",
-  "/docs/api-reference/oauth-connect",
-  "/docs/api-reference/connection-accounts",
-]
+  for (const entry of entries) {
+
+    const fullPath = path.join(dir, entry.name)
+
+    // Skip hidden/meta files
+    if (
+      entry.name.startsWith("_") ||
+      entry.name.startsWith(".")
+    ) {
+      continue
+    }
+
+    if (entry.isDirectory()) {
+
+      routes = routes.concat(
+        getAllDocsRoutes(fullPath)
+      )
+
+    }
+
+    if (
+      entry.isFile() &&
+      entry.name.endsWith(".mdx")
+    ) {
+
+      const relativePath = path
+        .relative(docsDirectory, fullPath)
+        .replace(".mdx", "")
+
+      let route = relativePath
+        .split(path.sep)
+        .join("/")
+
+      // ✅ Fix index.mdx issue
+      if (route.endsWith("/index")) {
+        route = route.replace("/index", "")
+      }
+
+      // Root index case
+      if (route === "index") {
+        route = ""
+      }
+
+      routes.push(`/docs/${route}`)
+    }
+  }
+
+  return routes
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return docsPages.map((path) => ({
-    url: `${baseUrl}${path}`,
+
+  const routes = getAllDocsRoutes(docsDirectory)
+
+  return routes.map((route) => ({
+    url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 0.7,
+    changeFrequency: "weekly",
+    priority: route === "/docs" ? 1 : 0.9,
   }))
 }
