@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 
 import { FormMessage } from "@/components/shared/FormMessage";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { getErrorMessage } from "@/lib/errors";
 
@@ -46,9 +46,8 @@ export const ResetPasswordForm = ({ token, email }: { token: string; email: stri
     <form className="space-y-6" onSubmit={handleSubmit(submit)} noValidate>
       <div className="space-y-2">
         <Label htmlFor="reset-password">New Password</Label>
-        <Input
+        <PasswordInput
           id="reset-password"
-          type="password"
           autoComplete="new-password"
           placeholder="Enter your new password"
           {...register("password")}
@@ -58,9 +57,8 @@ export const ResetPasswordForm = ({ token, email }: { token: string; email: stri
 
       <div className="space-y-2">
         <Label htmlFor="reset-confirm">Confirm Password</Label>
-        <Input
+        <PasswordInput
           id="reset-confirm"
-          type="password"
           autoComplete="new-password"
           placeholder="Confirm your new password"
           {...register("password_confirmation")}

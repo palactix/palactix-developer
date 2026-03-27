@@ -26,14 +26,16 @@ export default async function DocsLayout({ children }: Readonly<{
   return (
     <Layout
       {...themeConfig}
-      banner={<Banner storageKey="Palactix">Palactix Beta</Banner>}
+      // banner={<Banner storageKey="Palactix">Palactix Beta</Banner>}
       navbar={navbar}
       footer={<Footer>MIT {new Date().getFullYear()} © Palactix.</Footer>}
       sidebar={{ defaultMenuCollapseLevel: 1 }}
       pageMap={pageMap}
       
     >
-      {children}
+      <div className="plx-docs-content">
+        {children}
+      </div>
     </Layout>
   )
 }

@@ -1,12 +1,64 @@
 ---
 title: Access Tokens
-description: Understand access tokens used for authenticated API requests.
+description: Understand how access tokens work in Palactix APIs.
 ---
 
 # Access Tokens
 
-This section is currently under development.
+Access tokens are used to authenticate requests to the Palactix API.
 
-> 🚧 Coming Soon
+Every API request must include a valid access token.
 
-More detailed documentation and examples will be added in an upcoming release.
+---
+
+## How It Works
+
+1. You generate a token using your app credentials  
+2. Palactix issues a Bearer token  
+3. You include this token in API requests  
+
+---
+
+## Example Usage
+
+```bash
+Authorization: Bearer plx_abc123...
+```
+
+---
+
+## Token Properties
+
+- Type: Bearer token  
+- Scope: Full API access (`*`)  
+- Expiry: Long-lived (default: 1 year)  
+
+---
+
+## Token Behavior
+
+- Only one active token per app  
+- Generating a new token revokes the old one  
+- Tokens are linked to the app admin user  
+
+---
+
+## When to Generate a New Token
+
+- Token expired  
+- Token compromised  
+- Secret rotated  
+
+---
+
+## Security Best Practices
+
+- Never expose tokens in frontend code  
+- Store tokens securely (server-side)  
+- Rotate tokens periodically  
+
+---
+
+## Get Your Token
+
+[Generate OAuth Token](/docs/api-reference/generate-access-token)

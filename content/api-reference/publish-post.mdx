@@ -1,0 +1,501 @@
+---
+title: Publish Post
+description: Publish content to one or more connected accounts using the unified publish API.
+---
+
+## Publish Post
+
+Create and publish content to one or more connected accounts.
+
+This API supports:
+
+- Single account publishing  
+- Multiple account publishing  
+- Media attachments  
+- First comments  
+- Scheduled publishing  
+- Advanced container-based publishing  
+
+---
+
+## Endpoint
+
+```bash
+POST /api/v1/post/publish
+```
+Requires authentication using your Bearer access token.
+
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+---
+
+## Quick Example
+
+This is the simplest way to publish a post.
+
+```bash
+curl -X POST https://api.palactix.com/v1/post/publish \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "account_ids": [
+      "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9"
+    ],
+    "content": "Hello world from Palactix!"
+  }'
+```
+
+This will publish the same content to the selected account.
+
+---
+
+## Request Structure
+
+Publish API supports two ways to structure content:
+
+**Basic**: Use content field for single posts
+
+**Containers**: Use containers array for posts with comments or threads"
+
+```json
+{
+  "request_id": "string",
+  "account_ids": ["string"],
+  "content": "string",
+  "media": [],
+  "containers": [],
+  "platforms": {},
+  "scheduled_at": "datetime"
+}
+```
+Each field is explained below.
+
+---
+
+## Field Reference
+
+### request_id
+
+Optional unique identifier for the request.
+
+Used to prevent duplicate publishing.
+
+Type:
+
+string
+
+```bash
+"request_id": "req_12345"
+```
+If not provided, Palactix generates one automatically.
+
+---
+
+### account_ids
+
+List of accounts where the post will be published.
+
+Type:
+
+array<string/>
+
+Required:
+
+Yes
+
+```bash
+
+"account_ids": [
+  "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9"
+]
+```
+
+Each ID must reference a connected account.
+
+---
+
+### content
+
+Text content of the post.
+
+Used in **basic publishing mode**.
+
+Type:
+
+string
+
+
+```bash
+"content": "Launching our new feature today!"
+```
+
+Important:
+
+This field is ignored when **containers** are used.
+
+---
+
+## Containers (Advanced Mode)
+
+Containers allow advanced publishing such as:
+
+- First comments  
+- Multi-part posts  
+- Thread-style publishing  
+
+If `containers` are provided, the root `content` field is ignored.
+
+---
+
+### Container Rules
+
+Containers follow a strict order:
+
+- The **first container** is treated as the main post  
+- The `type` field is allowed **only in the first container**  
+- Additional containers are automatically treated as **comments**  
+- Maximum allowed containers: **10**
+
+Example:
+
+```json
+"containers": [
+  {
+    "type": "post",
+    "content": "Post with comments from API"
+  },
+  {
+    "content": "This is first comment from APIs"
+  }
+]
+```
+
+Validation Note:
+
+If `type` is provided in containers after the first container,  
+the request will be rejected.
+
+---
+
+### Container Structure
+
+Each container represents either:
+
+- The main post  
+- A comment  
+
+| Field | Type | Required | Description |
+|------|------|----------|-------------|
+| `type` | string | First container only | Defines the post type |
+| `content` | string | Yes | Text content of the post or comment |
+| `media` | array | No | Media attachments (see **Media** section) |
+
+---
+
+### Post Types
+
+The first container can specify a post type using the `type` field.
+
+If not specified, the default type is automatically applied.
+
+| Type | Description | Platforms |
+|------|-------------|-----------|
+| `post` | Regular feed post (default) | Instagram, Facebook, LinkedIn, X |
+| `video` | Video content (Reel / Short / TikTok) | Instagram, TikTok, YouTube |
+| `story` | 24-hour story content | Instagram, Facebook |
+| `carousel` | Multiple images/videos | Instagram, LinkedIn |
+| `article` | Long-form article | LinkedIn |
+
+Default Behavior:
+
+- Defaults to `post` for most platforms  
+- Defaults to `video` for TikTok and YouTube  
+
+Example:
+
+```json
+"containers": [
+  {
+    "type": "video",
+    "content": "Launching our new feature video!"
+  }
+]
+```
+---
+
+### Basic vs Advanced Mode
+
+Publishing mode is determined automatically.
+
+| Mode | Condition |
+|------|-----------|
+| **Basic Mode** | `containers` not provided |
+| **Advanced Mode** | `containers` provided |
+
+Basic Example:
+
+```json
+{
+  "account_ids": ["acc_1"],
+  "content": "Hello world!"
+}
+```
+
+Advanced Example:
+
+```json
+
+{
+  "account_ids": ["acc_1"],
+  "containers": [
+    {
+      "type": "post",
+      "content": "Hello world!"
+    },
+    {
+      "content": "First comment"
+    }
+  ]
+}
+```
+---
+
+## Media
+
+Media can be attached to:
+
+- Root content
+- Containers
+- Comments
+
+Each media object represents a publicly accessible file.
+
+---
+
+### Media Structure
+
+```json
+
+"media": [
+  {
+    "url": "https://cdn.example.com/image.jpg",
+    "type": "image",
+    "alt_text": "Optional description"
+  }
+]
+```
+---
+
+### Media Fields
+
+| Field | Type | Required | Description |
+|------|------|-----------|-------------|
+| `url` | string | Yes | Publicly accessible media URL. Must be reachable by Palactix servers. |
+| `type` | string | Yes | Media type. Supported values: `image`, `video`. |
+| `alt_text` | string | No | Accessibility description for images. Recommended for better accessibility. |
+| `thumbnail_url` | string | No | Preview image URL. Used mainly for video thumbnails. |
+| `duration` | integer | No* | Duration in seconds. Required for video in some platforms. |
+| `mime_type` | string | No | MIME type of the media file (example: `image/jpeg`). |
+
+---
+
+### Supported Media Types
+
+| Type | Description |
+|------|-------------|
+| `image` | JPG, PNG, WEBP, or supported image formats |
+| `video` | MP4 or supported video formats |
+
+---
+
+### Media Notes
+
+- Media URLs must be publicly accessible.
+- Private URLs or expired links will fail.
+- Multiple media items are supported.
+- Media is duplicated per platform internally.
+
+---
+
+## Full Advanced Example
+
+This example shows a real-world advanced payload using containers and media.
+
+```json
+
+{
+  "account_ids": [
+    "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9"
+  ],
+  "containers": [
+    {
+      "type": "post",
+      "content": "Post with comments from API",
+      "media": [
+        {
+          "url": "https://cdn.example.com/image.jpg",
+          "type": "image",
+          "alt_text": "Alt Text"
+        },
+        {
+          "url": "https://cdn.example.com/image.jpg",
+          "type": "image",
+          "alt_text": "Alt Text"
+        }
+      ]
+    },
+    {
+      "type": "comment",
+      "content": "This is first comment from APIs",
+      "media": [
+        {
+          "url": "https://cdn.example.com/image.jpg",
+          "type": "image",
+          "alt_text": "Client side architecture"
+        }
+      ]
+    }
+  ]
+}
+```
+---
+
+# Platform Options
+
+Platform-specific parameters can be passed using the platforms object.
+
+These values are forwarded to platform APIs.
+
+```json
+
+"platforms": {
+  "instagram": {
+    "location_id": "123"
+  },
+  "linkedin": {
+    "visibility": "public"
+  }
+}
+```
+
+Platform options are optional.
+
+Unsupported fields are ignored.
+
+---
+
+# Scheduling
+
+Schedule posts using UTC time.
+
+
+```json
+"scheduled_at": "2026-04-20T10:00:00Z"
+```
+
+Important:
+
+- Must be in UTC format  
+- If omitted → post publishes immediately  
+
+---
+
+## Response
+
+The publish API does not publish instantly.
+
+All posts are processed asynchronously using background jobs.
+
+When a publish request is accepted, the API returns a **post_id** and a list of platform targets.
+
+---
+
+```json
+{
+  "message": "Post publish request accepted.",
+  "data": {
+    "post_id": "019d2a1d-5aea-7208-9026-3c61a657aaf6",
+    "status": "pending",
+    "total_accounts": 1,
+    "scheduled_at": null,
+    "mode": "advanced",
+    "platform_posts": [
+      {
+        "id": "019d2a1d-5af0-7393-bd32-69f06068866e",
+        "account_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+        "platform_id": 1,
+        "status": "pending"
+      }
+    ]
+  }
+}
+```
+## Status Flow
+
+Publishing happens asynchronously.
+
+Post status changes over time.
+
+Typical flow:
+
+pending → processing → published
+
+Scheduled flow:
+
+scheduled → processing → published
+
+Failure flow:
+
+pending → retrying → failed
+
+---
+
+## Common Errors
+
+### INVALID_ACCOUNT
+
+One or more account IDs are invalid.
+
+Check that the account is connected.
+
+---
+
+### DUPLICATE_REQUEST
+
+The request_id has already been used.
+
+Use a new request_id.
+
+---
+
+### INVALID_SCHEDULE
+
+scheduled_at must be a valid UTC datetime.
+
+---
+
+### INVALID_MEDIA
+
+Media URL or type is invalid.
+
+Verify media accessibility.
+
+---
+
+## Best Practices
+
+- Always store post_id after publishing  
+- Use request_id to prevent duplicates  
+- Validate media URLs before sending  
+- Keep container count under 10  
+- Use scheduling for delayed publishing  
+
+---
+
+## Next Step
+
+After publishing a post, monitor its progress:
+
+→ Check Post Status API

@@ -1,0 +1,115 @@
+---
+title: OAuth Token
+description: Generate an access token using client credentials.
+---
+
+# OAuth Token
+
+Generate an access token using your app's `client_id` and `client_secret`.
+
+This token is required to authenticate all API requests.
+
+---
+
+## Endpoint
+
+```bash
+POST /v1/oauth/token
+```
+---
+
+## Headers
+
+```bash
+Authorization: Basic <base64(client_id:client_secret)>
+Content-Type: application/x-www-form-urlencoded
+```
+
+---
+
+## Request Body
+
+```bash
+grant_type=client_credentials
+```
+
+---
+
+## cURL Example
+
+```bash
+curl -X POST https://api.palactix.com/v1/oauth/token \
+  -H "Authorization: Basic <base64(client_id:client_secret)>" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials"
+```
+
+---
+
+## Response
+
+```bash
+{
+  "access_token": "plx_abc123...",
+  "token_type": "Bearer",
+  "expires_in": 31536000
+}
+```
+
+---
+
+## Errors
+
+### 400 — Bad Request
+
+- invalid_authorization_header  
+- invalid_authorization_format  
+
+---
+
+### 401 — Unauthorized
+
+- invalid_client_id  
+- invalid_client_secret  
+
+---
+
+### 403 — Forbidden
+
+- app_not_active  
+
+---
+
+### 404 — Not Found
+
+- admin_not_found  
+
+---
+
+### 409 — Conflict
+
+- app_not_live  
+
+---
+
+### 422 — Validation Error
+
+Occurs when:
+
+- `grant_type` is missing  
+- `grant_type` is not `client_credentials`  
+
+---
+
+## Notes
+
+- Credentials must be sent via `Authorization: Basic` header  
+- `client_id` and `client_secret` are Base64 encoded  
+- Only one active token exists per app (new token revokes old)  
+- Token is issued for the app admin user  
+
+---
+
+## Next Step
+
+[Connect Account](/docs/connections/connect-account)

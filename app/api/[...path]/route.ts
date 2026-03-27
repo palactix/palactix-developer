@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { forwardToLaravel } from "@/lib/proxy-handler";
+import { forwardToLaravel, forwardToLaravelPublic } from "@/lib/proxy-handler";
+
+/** Path prefixes that can be read without authentication */
+const PUBLIC_GET_PREFIXES = ["/blog/", "/auth/resend-verification-email"];
+
+const isPublicGetRequest = (path: string, method: string): boolean =>
+  method === "GET" && PUBLIC_GET_PREFIXES.some((prefix) => `/${path}`.startsWith(prefix));
 
 type CatchAllRouteContext = {
   params: Promise<{ path: string[] }>;
@@ -12,6 +18,10 @@ const handleCatchAll = async (
 ): Promise<NextResponse> => {
   const { path } = await context.params;
   const targetPath = `${path.join("/")}${request.nextUrl.search}`;
+
+  if (isPublicGetRequest(targetPath, request.method)) {
+    return forwardToLaravelPublic(request, `/${targetPath}`);
+  }
 
   return forwardToLaravel(request, `/${targetPath}`);
 };

@@ -1,0 +1,27 @@
+import { StaticPageShell, useStaticContent } from "@/features/static-content";
+import { STATIC_PAGES_CONTENT_URLS } from "@/features/static-content/static-content.constant";
+
+
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cookie Policy - Palactix",
+  description:
+    "View the Cookie Policy for Palactix, outlining how we use cookies and manage your data."
+};
+const COOKIE_POLICY_URL = STATIC_PAGES_CONTENT_URLS.COOKIE_POLICY;
+
+export default function CookiePolicyPage() {
+  const { content } = useStaticContent({ url: COOKIE_POLICY_URL });
+  return (
+    <StaticPageShell
+      backHref="/"
+      backLabel="Back to home"
+      eyebrow="Legal"
+      title="Cookie Policy"
+      description="Transparency around how Palactix handles your data."
+    >
+      {content}
+    </StaticPageShell>
+  );
+}

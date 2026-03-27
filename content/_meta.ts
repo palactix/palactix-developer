@@ -1,10 +1,11 @@
-export default {
-   index: "Introduction",
-   "getting-started": "Getting Started",
-   authentication: "Authentication & Ownership",
+const meta = {
+   "index": "Introduction",
    "core-concepts": "Core Concepts",
-   publishing: "Publishing API",
+   "getting-started": "Getting Started",
+   "authentication": "Authentication",
+   "connections": "Connections",
    "api-reference": "API Reference",
-   debugging: "Debugging & Logs",
    "coming-soon": "Coming Soon"
 }
+
+export default meta

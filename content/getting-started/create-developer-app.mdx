@@ -1,12 +1,74 @@
 ---
 title: Create Developer App
-description: Set up your first developer app in Palactix.
+description: Create your first developer app and get API credentials.
 ---
 
 # Create Developer App
 
-This section is currently under development.
+Before using Palactix APIs, you need to create a developer app.
 
-> 🚧 Coming Soon
+This app represents your integration and is used to generate API credentials.
 
-More detailed documentation and examples will be added in an upcoming release.
+---
+
+## Step 1: Open Developer Portal
+
+Go to:
+
+[Create your Developer App](/developer/apps)
+
+---
+
+## Step 2: Create a New App
+![Create App Screen](/images/docs/docs-create-app.png)
+
+Fill in the required details:
+
+- **App Name** (required)  
+- **Logo** (optional)  
+
+Click **Create App**
+
+---
+
+## Step 3: Verify Your App
+
+To activate your app, you must verify at least one platform.
+
+Verification happens when you:
+
+- Add platform credentials  
+- Successfully connect your own account via OAuth  
+
+Until then, your app remains in **draft mode**
+
+---
+
+## Step 4: Generate API Credentials
+
+Once verified:
+
+- You can generate your `client_id`
+- You can generate your `client_secret`
+
+⚠️ **Important:**
+- The `client_secret` is shown **only once**
+- Store it securely
+- You can regenerate it later (old tokens will be revoked)
+
+---
+
+## What You Get
+
+After setup:
+
+- `client_id` → Public identifier  
+- `client_secret` → Private credential  
+
+These are used to generate API tokens.
+
+---
+
+## Next Step
+
+[Configure Platform Credentials](/docs/getting-started/configure-platform-credentials)

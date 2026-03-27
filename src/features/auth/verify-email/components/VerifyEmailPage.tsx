@@ -1,14 +1,11 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 
 import { useResendCooldown, useResendVerificationEmail } from "../hooks";
 
-export const VerifyEmailPage = () => {
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") ?? "";
+export const VerifyEmailPage = ({ email }: { email?: string }) => {
+
 
   const { canResend, secondsLeft, startCooldown } = useResendCooldown();
   const { resend, isPending } = useResendVerificationEmail({

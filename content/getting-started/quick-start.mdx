@@ -1,12 +1,162 @@
 ---
 title: Quick Start
-description: Get up and running quickly with the essential Palactix setup steps.
+description: Connect your first account and fetch data using Palactix in under 5 minutes.
 ---
+
+import { Code } from 'nextra/components'
 
 # Quick Start
 
-This section is currently under development.
+Connect your first social account using Palactix in minutes.
 
-> 🚧 Coming Soon
+You will:
+1. Create a developer app  
+2. Generate an access token  
+3. Connect a social account  
+4. Fetch connected accounts  
 
-More detailed documentation and examples will be added in an upcoming release.
+---
+
+## 1. Create a Developer App
+
+Go to the developer portal and create your app:
+
+[Create your Developer App](/developer/apps)
+
+You will receive:
+
+- `client_id`
+- `client_secret`
+
+---
+
+## 2. Generate Access Token
+
+Use your app credentials to generate an API token.
+
+```bash
+curl -X POST https://api.palactix.com/v1/oauth/token \
+  -H "Authorization: Basic BASE64(client_id:client_secret)" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials"`
+```
+### Response
+
+```json
+{
+  "access_token": "plx_xxx",
+  "token_type": "Bearer",
+  "expires_in": 31536000
+}
+```
+
+Use this token in all requests:
+
+```js
+{
+  Authorization: Bearer plx_xxx
+}
+```
+
+---
+
+## 3. Generate OAuth Connection URL
+
+Create a connection link for your user.
+
+```bash
+curl "https://api.palactix.com/v1/oauth/instagram/connect?user_id=USER_123&redirect_url=https://yourapp.com/callback" \
+  -H "Authorization: Bearer plx_xxx"`
+```
+
+### Response
+
+```json
+{
+  "redirect_url": "https://instagram.com/oauth/authorize?...",
+  "connection_id": "conn_abc123"
+}
+```
+
+Redirect your user to `redirect_url`
+
+---
+
+## 4. User Completes OAuth
+
+- User logs in to the platform  
+- Grants permission  
+- Redirects back to your `redirect_url`  
+
+Palactix processes the connection automatically.
+
+---
+
+## 5. Fetch Connected Accounts
+
+Use the `connection_id` to retrieve accounts.
+
+```bash
+curl https://api.palactix.com/v1/connections/conn_abc123/accounts \
+  -H "Authorization: Bearer plx_xxx"`
+```
+
+### Response
+
+```json
+{
+  "connection_id": "conn_abc123",
+  "status": "success",
+  "accounts": [
+    {
+      "id": "acc_1",
+      "platform_id": 1,
+      "username": "my_instagram",
+      "name": "My Page"
+    }
+  ]
+}
+```
+---
+
+## Flow Summary
+
+Create App  
+↓  
+Generate Token  
+↓  
+Create OAuth Link  
+↓  
+User Authorizes  
+↓  
+Fetch Accounts  
+
+---
+
+## Key Concepts
+
+### external_user_id (`user_id`)
+
+Your internal user identifier.
+
+- Defined by your system  
+- Used to map users in Palactix  
+- Must remain consistent  
+
+---
+
+### connection_id
+
+Represents a single OAuth session.
+
+- Generated during connect  
+- Used to fetch accounts  
+- Unique per connection  
+
+---
+
+## What’s Next
+
+- [Understand connections](/docs/connections)
+- [Explore APIs](/docs/api-reference)
+- [Learn authentication](/docs/authentication/overview)

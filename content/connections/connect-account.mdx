@@ -1,0 +1,60 @@
+---
+title: Connect Account
+description: Connect a user account using OAuth.
+---
+
+# Connect Account
+
+To connect a user’s social account, generate an OAuth redirect URL and send the user to it.
+
+---
+
+## Step 1: Generate OAuth URL
+
+Use the API:
+
+[Generate OAuth Redirect URL →](/docs/api-reference/oauth-connect)
+
+---
+
+## Step 2: Redirect User
+
+Redirect the user to the `redirect_url` returned by the API.
+
+```js
+https://platform.com/oauth/authorize?client_id=xxx&redirect_uri=xxx
+```
+
+---
+
+## Step 3: User Authorizes
+
+The user:
+
+- Logs in to the platform  
+- Grants permission  
+- Gets redirected back  
+
+---
+
+## Step 4: Connection Created
+
+After OAuth:
+
+- Palactix processes tokens  
+- A connection is created  
+- Accounts are stored  
+
+---
+
+## What You Already Have
+
+- `connection_id` (from step 1)
+
+Use this to fetch accounts.
+
+---
+
+## Next Step
+
+[Fetch Connected Accounts →](/docs/connections/fetch-accounts)

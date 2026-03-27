@@ -1,8 +1,10 @@
-export default {
+const meta = {
   "base-url": "Base URL",
-  headers: "Headers",
+  "generate-access-token": "Generate Access Token",
   authentication: "Authentication",
-  endpoints: "Endpoints",
-  "response-format": "Response Format",
-  "error-codes": "Error Codes"
-}
+  "oauth-connect": "Generate OAuth Redirect URL",
+  "connection-accounts": "Get Connection Accounts",
+  "publish-post": "Publish API",
+};
+
+export default meta;

@@ -36,6 +36,12 @@ export default function SignupPage() {
           Sign in
         </Link>
       </p>
+      <p className="text-center mt-6 text-sm text-muted-foreground">
+        Developers{" "}
+        <Link href={"/developer/signup"} className="text-primary font-semibold hover:underline">
+          Create a developer account 
+        </Link>
+      </p>
     </AuthCard>
   );
 }

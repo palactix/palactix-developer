@@ -1,0 +1,132 @@
+---
+title: Get Connection Accounts
+description: Retrieve accounts linked during an OAuth connection.
+---
+
+# Get Connection Accounts
+
+Retrieve the list of accounts linked during an OAuth connection using `connection_id`.
+
+---
+
+## Endpoint
+
+```bash
+GET /v1/connections/{connection_id}/accounts
+```
+
+---
+
+## Headers
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+---
+
+## Path Parameters
+
+| Parameter       | Type   | Required | Description |
+|----------------|--------|----------|-------------|
+| connection_id  | string | Yes      | Unique connection identifier |
+
+---
+
+## Response
+
+```json
+{
+  "connection_id": "conn_abc123",
+  "status": "success",
+  "accounts": [
+    {
+      "id": "acc_1",
+      "app_user_id": "user_123",
+      "platform_id": 1,
+      "platform_account_id": "123456789",
+      "username": "my_account",
+      "name": "My Page",
+      "email": null,
+      "avatar_url": null,
+      "account_type": "page",
+      "status": "active"
+    }
+  ]
+}
+```
+
+---
+
+## cURL Example
+
+```bash
+curl -X GET https://api.palactix.com/v1/connections/conn_abc123/accounts \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+## Response Status
+
+| Status   | Description |
+|----------|-------------|
+| pending  | OAuth is still in progress |
+| success  | Accounts successfully fetched |
+| failed   | Connection failed |
+
+---
+
+## How to Use This API
+
+1. Get `connection_id` from [OAuth connect](docs/api-reference/oauth-connect) API  
+2. Call this endpoint  
+3. Check `status`  
+4. If `success` → use accounts  
+5. If `pending` → retry after a few seconds  
+6. If `failed` → show error to user  
+
+---
+
+## Handling Multiple Accounts
+
+Some platforms return multiple accounts:
+
+- Facebook → Pages  
+- Instagram → Business accounts  
+
+You should:
+
+- Let the user select an account  
+- Store selected account ID  
+
+---
+
+## Errors
+
+### 404 — Connection Not Found
+
+**Error:**
+- `CONNECTION_NOT_FOUND`
+
+**When this happens:**
+- Invalid or expired `connection_id`  
+- Connection does not belong to your app  
+
+**How to fix:**
+- Ensure correct `connection_id` is used  
+- Do not reuse old connection IDs  
+
+---
+
+## Debugging Tips
+
+- Always store `connection_id`  
+- Retry if status is `pending`  
+- Log full response for debugging  
+
+---
+
+## Next Step
+
+[Publishing API](/docs/publishing)

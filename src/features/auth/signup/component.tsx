@@ -9,6 +9,7 @@ import { signupSchema } from "./rules";
 import type { SignupFormValues, SignupType } from "./types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { FormMessage } from "@/components/shared/FormMessage";
 import { Button } from "@/components/ui/button";
 
@@ -37,7 +38,7 @@ export const SignupForm = ({ type }: SignupFormProps) => {
     <form className="space-y-6" onSubmit={handleSubmit(submit)} noValidate>
       <div className="space-y-2">
         <Label htmlFor="signup-name">Name</Label>
-        <Input id="signup-name" type="text"  placeholder="Acme Digital Agency" autoComplete="name" {...register("name")} />
+        <Input id="signup-name" type="text"  placeholder={ type === "developer" ?  "Your Name" : "Acme Digital Agency"} autoComplete="name" {...register("name")} />
         <FormMessage>{errors.name?.message}</FormMessage>
       </div>
 
@@ -47,7 +48,7 @@ export const SignupForm = ({ type }: SignupFormProps) => {
           id="signup-email"
           type="email"
           autoComplete="email"
-           placeholder="you@agency.com" 
+           placeholder={ type === "developer" ?  "you@developer.com" : "you@agency.com"} 
           {...register("email")}
         />
         <FormMessage>{errors.email?.message}</FormMessage>
@@ -55,9 +56,8 @@ export const SignupForm = ({ type }: SignupFormProps) => {
 
       <div className="space-y-2">
         <Label htmlFor="signup-password">Password</Label>
-        <Input
+        <PasswordInput
           id="signup-password"
-          type="password"
           autoComplete="new-password"
           placeholder="Create a strong password"
           {...register("password")}

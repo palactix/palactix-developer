@@ -1,11 +1,10 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-
 import { notify } from "@/shared/notifications/notifier";
-
 import { signupRequest } from "./api";
 import type { SignupFormValues, SignupResponse, SignupType } from "./types";
+import { useRouter } from "next/navigation";
 
 type UseSignupReturn = {
   submit: (values: SignupFormValues) => void;
@@ -15,6 +14,7 @@ type UseSignupReturn = {
 };
 
 export const useSignup = (type: SignupType): UseSignupReturn => {
+  const router = useRouter();
   const mutation = useMutation<SignupResponse, Error, SignupFormValues>({
     mutationFn: (values) => {
       const { agreeToByok, ...payload } = values;
@@ -25,8 +25,9 @@ export const useSignup = (type: SignupType): UseSignupReturn => {
         type,
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, values) => {
       notify.success("Account created successfully");
+      router.push("/auth/verify-email?email=" + values.email);
     },
     onError: (error) => {
       notify.error(error.message);
