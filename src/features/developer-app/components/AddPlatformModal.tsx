@@ -93,7 +93,7 @@ export const AddPlatformModal = ({ isOpen, onClose, appId, integratedPlatformIds
   };
 
   const redirectUrl = selectedPlatform
-    ? `${process.env.NEXT_PUBLIC_CORE_SYSTEM_URL}/oauth/${selectedPlatform.slug}/callback`
+    ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth/${selectedPlatform.slug}/callback`
     : "";
 
   useEffect(() => {

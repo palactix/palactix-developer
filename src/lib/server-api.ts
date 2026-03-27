@@ -19,6 +19,8 @@ export const callLaravelApi = async (path: string, init?: RequestInit): Promise<
     headers.set("Accept", "application/json");
   }
 
+  headers.set("Accept-Encoding", "identity");
+
   return fetch(getLaravelUrl(path), {
     ...init,
     headers,
