@@ -6,7 +6,8 @@ import { ArrowLeft, ArrowRight, AtSign, CheckCircle2, Loader2, XCircle } from "l
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { checkUsernameAvailability } from "../agency-onboarding.api";
+import { useCheckUsername, useStoreUsername } from "../agency-onboarding.hooks";
+import { notify } from "@/shared/notifications/notifier";
 
 interface Props {
   onComplete: (username: string) => void;
@@ -23,6 +24,9 @@ export const AgencyStep3Username = ({ onComplete, onBack }: Props) => {
   const [message, setMessage] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { mutateAsync: checkUsername } = useCheckUsername();
+  const { mutateAsync: saveUsername, isPending: isSaving } = useStoreUsername();
+
   const checkAvailability = useCallback(async (value: string) => {
     if (value.length < 3) {
       setStatus("idle");
@@ -37,7 +41,7 @@ export const AgencyStep3Username = ({ onComplete, onBack }: Props) => {
 
     setStatus("checking");
     try {
-      const result = await checkUsernameAvailability(value);
+      const result = await checkUsername(value);
       if (result.available) {
         setStatus("available");
         setMessage(`${value}.palactix.com is available!`);
@@ -49,7 +53,7 @@ export const AgencyStep3Username = ({ onComplete, onBack }: Props) => {
       setStatus("idle");
       setMessage("Could not check availability. Please try again.");
     }
-  }, []);
+  }, [checkUsername]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -181,11 +185,24 @@ export const AgencyStep3Username = ({ onComplete, onBack }: Props) => {
         <Button
           type="button"
           className="flex-1 h-11 gap-1"
-          disabled={status !== "available"}
-          onClick={() => onComplete(username)}
+          disabled={status !== "available" || isSaving}
+          onClick={async () => {
+            try {
+              await saveUsername(username);
+              onComplete(username);
+            } catch (err) {
+              notify.error(err instanceof Error ? err.message : "Failed to save username");
+            }
+          }}
         >
-          Continue
-          <ArrowRight className="h-4 w-4" />
+          {isSaving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              Continue
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
         </Button>
       </div>
     </div>

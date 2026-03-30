@@ -1,3 +1,5 @@
+import { apiClient } from "@/lib/api-client";
+
 export interface UsernameCheckResponse {
   available: boolean;
   username: string;
@@ -5,16 +7,16 @@ export interface UsernameCheckResponse {
 }
 
 export const checkUsernameAvailability = async (username: string): Promise<UsernameCheckResponse> => {
-  const response = await fetch("/api/mock/username", {
+  return apiClient<UsernameCheckResponse>("/agency/workspace/check-username", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username }),
   });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    return { available: false, username, message: data?.message ?? "Check failed" };
-  }
-
-  return response.json();
 };
+
+export const storeUsername = async (username: string): Promise<void> => {
+  await apiClient<void>("/agency/workspace/username", {
+    method: "POST",
+    body: JSON.stringify({ username }),
+  });
+};
+

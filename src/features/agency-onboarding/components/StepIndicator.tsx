@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
 const STEPS = [
-  { label: "Create App" },
+  { label: "Create Workspace" },
   { label: "Connect Platforms" },
   { label: "Choose Username" },
   { label: "Provisioning" },
