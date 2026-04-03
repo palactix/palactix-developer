@@ -92,10 +92,9 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
   return (
     <>
       {/* Article Schema */}
-      <Script
+      <script
         id="article-schema"
         type="application/ld+json"
-        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(generateArticleSchema({ ...blog, tags: keywords }, blogUrl)),
         }}
@@ -103,10 +102,9 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
 
       {/* FAQ Schema */}
       {blog.faqs && blog.faqs.length > 0 && (
-        <Script
+        <script
           id="faq-schema"
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(generateFAQSchema(blog.faqs)),
           }}
@@ -114,10 +112,9 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
       )}
 
       {/* Breadcrumb Schema */}
-      <Script
+      <script
         id="breadcrumb-schema"
         type="application/ld+json"
-        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
