@@ -154,7 +154,7 @@ export const AgencyStep2Platforms = ({ appId, onContinue, onBack }: Props) => {
         <Button
           type="button"
           className="flex-1 h-11 gap-1"
-          //disabled={!hasVerifiedIntegration}
+          disabled={!hasVerifiedIntegration}
           onClick={onContinue}
         >
           Continue
