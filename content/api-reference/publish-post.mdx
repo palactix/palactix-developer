@@ -21,7 +21,7 @@ This API supports:
 ## Endpoint
 
 ```bash
-POST /api/v1/post/publish
+POST /api/v1/posts/publish
 ```
 Requires authentication using your Bearer access token.
 
@@ -36,7 +36,7 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 This is the simplest way to publish a post.
 
 ```bash
-curl -X POST https://api.palactix.com/v1/post/publish \
+curl -X POST https://api.palactix.com/v1/posts/publish \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

@@ -7,7 +7,7 @@ import { Logo } from '@/shared/Logo';
 function PublishCurlExample() {
   //const [copied, setCopied] = useState(false)
 
-  const codeString = `curl -X POST https://api.palactix.com/v1/post/publish \\
+  const codeString = `curl -X POST https://api.palactix.com/v1/posts/publish \\
   -H "Authorization: Bearer YOUR_API_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -45,7 +45,7 @@ function PublishCurlExample() {
         {/* Endpoint Label */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
           <Code size={14} />
-          POST /v1/post/publish
+          POST /v1/posts/publish
         </div>
 
         {/* Copy Button */}
@@ -390,7 +390,7 @@ export default function DeveloperLandingPage() {
                     Send your first publish request via the unified API.
                   </p>
                   <code className="text-xs bg-muted p-2 rounded mt-3 block">
-                    POST /v1/publish
+                    POST /v1/posts/publish
                   </code>
                 </div>
               </div>
