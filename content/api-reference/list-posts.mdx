@@ -1,0 +1,276 @@
+---
+title: List Posts
+description: Retrieve a paginated list of posts for your app, with optional filtering by date range, status, and client users.
+---
+
+## List Posts
+
+Fetch posts that belong to your app. The response is paginated. Use filters to narrow results by date range, post status, or specific client users.
+
+This API is used for:
+
+- Calendar views (filter by date range)
+- Post list/management views (filter by status)
+- Client-specific post history (filter by external user IDs)
+
+---
+
+## Endpoint
+
+```bash
+GET /api/v1/posts
+```
+
+Requires authentication using your Bearer access token.
+
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+---
+
+## Quick Example
+
+Fetch all posts for April 2026:
+
+```bash
+curl -X GET "https://api.palactix.com/v1/posts?date_from=2026-04-01&date_to=2026-04-30" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+## Query Parameters
+
+All parameters are optional. You may combine any of them.
+
+---
+
+### date_from
+
+Filter posts on or after this date.
+
+| Detail | Value |
+|--------|-------|
+| Type | string |
+| Format | `Y-m-d` (e.g. `2026-04-01`) |
+| Required | No |
+
+```
+date_from=2026-04-01
+```
+
+If combined with `date_to`, returns posts scheduled within the range (inclusive on both ends).
+
+---
+
+### date_to
+
+Filter posts on or before this date.
+
+| Detail | Value |
+|--------|-------|
+| Type | string |
+| Format | `Y-m-d` (e.g. `2026-04-30`) |
+| Required | No |
+| Constraint | Must be equal to or after `date_from` |
+
+```
+date_to=2026-04-30
+```
+
+---
+
+### status
+
+Filter by post status.
+
+| Detail | Value |
+|--------|-------|
+| Type | string |
+| Allowed values | `pending`, `scheduled`, `published`, `failed` |
+| Required | No |
+
+```
+status=scheduled
+```
+
+| Value | Meaning |
+|-------|---------|
+| `pending` | Post is created but not yet dispatched |
+| `scheduled` | Post is queued and will publish at `scheduled_at` |
+| `published` | Post has been published successfully |
+| `failed` | Publishing failed on one or more accounts |
+
+---
+
+### external_user_ids[]
+
+Filter posts to specific client users by their external user IDs.
+
+An external user ID is the ID of the user in **your system** — the same value you used when connecting an account via OAuth.
+
+| Detail | Value |
+|--------|-------|
+| Type | array of strings |
+| Required | No |
+
+```
+external_user_ids[]=user_001&external_user_ids[]=user_002
+```
+
+Use this to show posts only for a specific client.
+
+---
+
+### page
+
+The page number to retrieve.
+
+| Detail | Value |
+|--------|-------|
+| Type | integer |
+| Default | `1` |
+| Minimum | `1` |
+
+```
+page=2
+```
+
+---
+
+### per_page
+
+Number of posts per page.
+
+| Detail | Value |
+|--------|-------|
+| Type | integer |
+| Default | `20` |
+| Minimum | `1` |
+| Maximum | `100` |
+
+```
+per_page=50
+```
+
+---
+
+## Response
+
+```json
+{
+  "data": [
+    {
+      "id": "019d529f-e495-72aa-94ec-ff4268e61973",
+      "request_id": "req_abc123",
+      "external_user_id": "user_001",
+      "status": "scheduled",
+      "mode": "basic",
+      "scheduled_at": "2026-04-10T09:00:00Z",
+      "created_at": "2026-04-06T14:00:00Z",
+      "containers": [
+        {
+          "content": "Hello from Palactix!",
+          "media": []
+        }
+      ],
+      "platform_posts": [
+        {
+          "id": "019d529f-f123-72aa-94ec-ab8900000011",
+          "account_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+          "platform": "instagram",
+          "handle": "@example_handle",
+          "status": "scheduled",
+          "scheduled_at": "2026-04-10T09:00:00Z"
+        }
+      ],
+      "tags": []
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 20,
+    "total": 42,
+    "last_page": 3
+  }
+}
+```
+
+---
+
+## Response Fields
+
+### Top Level
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data` | array | Array of post objects |
+| `meta` | object | Pagination metadata |
+
+### `meta` Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `current_page` | integer | The current page number |
+| `per_page` | integer | Number of results per page |
+| `total` | integer | Total number of matching posts |
+| `last_page` | integer | Last available page number |
+
+### Post Object (`data[]`)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string (UUID) | Unique post identifier |
+| `request_id` | string | Idempotency key provided at publish time |
+| `external_user_id` | string | The client's external user ID from your system |
+| `status` | string | Current post status: `pending`, `scheduled`, `published`, or `failed` |
+| `mode` | string | Publish mode: `basic` (single content block) or `advanced` (containers with comments) |
+| `scheduled_at` | string (ISO 8601) | UTC datetime when the post is scheduled to publish |
+| `created_at` | string (ISO 8601) | UTC datetime when the post record was created |
+| `containers` | array | Content blocks. First item is the post body; additional items are comments |
+| `platform_posts` | array | Per-account publish records (see below) |
+| `tags` | array | Reserved for future use. Always returns an empty array |
+
+### Container Object (`containers[]`)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `content` | string | Text content of this container |
+| `media` | array | Media attachments for this container |
+
+### Platform Post Object (`platform_posts[]`)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string (UUID) | Unique identifier for this platform publish record |
+| `account_id` | string (UUID) | The connected account this post targets |
+| `platform` | string | Platform slug, e.g. `instagram`, `twitter`, `facebook` |
+| `handle` | string | The account's username or handle on the platform |
+| `status` | string | Status of this specific account's publish: `pending`, `scheduled`, `published`, or `failed` |
+| `scheduled_at` | string (ISO 8601) | Scheduled publish time for this account |
+
+---
+
+## Error Responses
+
+### 422 Unprocessable Entity
+
+Returned when a query parameter fails validation.
+
+```json
+{
+  "message": "The date_to must be a date after or equal to date_from.",
+  "errors": {
+    "date_to": ["The date_to must be a date after or equal to date_from."]
+  }
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "message": "Unauthenticated."
+}
+```

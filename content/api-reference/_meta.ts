@@ -5,6 +5,7 @@ const meta = {
   "oauth-connect": "Generate OAuth Redirect URL",
   "connection-accounts": "Get Connection Accounts",
   "publish-post": "Publish API",
+  "list-posts": "List Posts API",
 };
 
 export default meta;
