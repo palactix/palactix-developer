@@ -1,0 +1,63 @@
+---
+title: Publisher Widget — Overview
+description: Embed a social media publisher directly into your website or web app using the Palactix Publisher Widget.
+---
+
+# Publisher Widget
+
+The **Palactix Publisher Widget** is an embeddable social media scheduler you can drop into any website or web application. It lets your end users compose and schedule posts to their connected social accounts without ever leaving your product.
+
+---
+
+## How It Works
+
+```
+Your website                    Palactix
+─────────────────               ──────────────────────────────
+  1. User clicks Publish
+        │
+  2. Your server generates  ──► POST /developer/apps/{id}/widgets/{widgetId}/init-token
+     a short-lived init token       Returns: { token, expires_at }
+        │
+  3. Loader opens the iframe ──► widgets.palactix.com/publisher
+        │                              │
+        │                    4. Iframe exchanges init token
+        │                       POST /widget/session/exchange
+        │                              │
+        │◄──────────── postMessage ────┘
+  5. User composes + schedules post
+        │
+  6. Widget fires onClose / onPublish callback
+```
+
+1. **Your server** calls the Palactix API to generate a signed init token, scoped to a specific `widgetId` and end user.
+2. **Your page** passes the token to the loader script.
+3. **The loader** injects a sandboxed iframe pointing to `widgets.palactix.com`.
+4. **The iframe** exchanges the short-lived init token for a widget session, then renders the publisher UI.
+5. Communication between your page and the iframe is done via `window.postMessage`.
+
+---
+
+## Security Model
+
+| Concern | How it is handled |
+|---|---|
+| Origin enforcement | `allowed_origins` configured per widget — the backend rejects token exchanges from unlisted origins |
+| Token lifetime | Init tokens expire in 5 minutes (configurable 1–15 min) — replay window is minimal |
+| Session isolation | Widget sessions are cache-backed, revoked on close, scoped to one `(widget, user)` pair |
+| No credentials in the browser | Your `widget_secret` never leaves your server — only the short-lived init token travels to the client |
+| iframe sandbox | `allow-scripts allow-forms allow-popups` only — no `allow-same-origin` |
+
+---
+
+## Platforms Supported
+
+The widget surfaces only the platforms you have active credentials for in your developer app. Configure which platforms each widget exposes in the **Widgets** section of [your developer portal](/developer/apps).
+
+---
+
+## Next Steps
+
+- [Integration Guide](/publisher-widget/integration-guide) — add the widget to your site in minutes
+- [Generating Init Tokens](/publisher-widget/init-token) — server-side token generation
+- [Widget API Reference](/publisher-widget/api-reference) — full endpoint reference

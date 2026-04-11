@@ -1,0 +1,280 @@
+---
+title: Widget API Reference
+description: Full reference for the Palactix Publisher Widget backend endpoints — widget CRUD, init tokens, and widget sessions.
+---
+
+import { Callout } from 'nextra/components'
+
+# Widget API Reference
+
+All widget management endpoints are scoped to your developer app and require your **developer access token**.
+
+```
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+---
+
+## Base URL
+
+```
+https://api.palactix.com
+```
+
+---
+
+## Widget Management
+
+### List widgets
+
+```
+GET /developer/apps/{APP_ID}/widgets
+```
+
+Returns all widgets belonging to the app.
+
+**Response**
+
+```json
+{
+  "data": [
+    {
+      "widget_id": "wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "name": "My Publisher Widget",
+      "status": "active",
+      "allowed_origins": ["https://yoursite.com"],
+      "enabled_platforms": ["instagram", "facebook"],
+      "theme": { "primary": "#6366f1" },
+      "created_at": "2026-01-01T10:00:00Z",
+      "updated_at": "2026-01-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### Create a widget
+
+```
+POST /developer/apps/{APP_ID}/widgets
+```
+
+**Request body**
+
+```json
+{
+  "name": "My Publisher Widget",
+  "allowed_origins": ["https://yoursite.com", "http://localhost:3000"],
+  "enabled_platforms": ["instagram", "facebook", "twitter"],
+  "theme": {
+    "primary": "#6366f1"
+  }
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `name` | string | ✓ | Human-readable widget name |
+| `allowed_origins` | string[] | — | Origins permitted to embed the widget |
+| `enabled_platforms` | string[] | — | Subset of your app's active platform integrations |
+| `theme.primary` | string | — | Primary brand colour (hex) |
+
+**Response** — `201 Created`
+
+```json
+{
+  "data": {
+    "widget_id": "wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "widget_secret": "plain-secret-shown-once",
+    "name": "My Publisher Widget",
+    "status": "active",
+    ...
+  }
+}
+```
+
+<Callout type="warning">
+  `widget_secret` is returned **once** on creation and on secret rotation. Store it securely — it cannot be retrieved again.
+</Callout>
+
+---
+
+### Get a widget
+
+```
+GET /developer/apps/{APP_ID}/widgets/{WIDGET_ID}
+```
+
+---
+
+### Update a widget
+
+```
+PUT /developer/apps/{APP_ID}/widgets/{WIDGET_ID}
+```
+
+**Request body** — all fields optional
+
+```json
+{
+  "name": "Updated Name",
+  "allowed_origins": ["https://yoursite.com"],
+  "enabled_platforms": ["instagram"],
+  "theme": { "primary": "#000000" },
+  "status": "suspended"
+}
+```
+
+`status` accepts `active`, `draft`, or `suspended`. A suspended widget rejects all token exchanges.
+
+---
+
+### Delete a widget
+
+```
+DELETE /developer/apps/{APP_ID}/widgets/{WIDGET_ID}
+```
+
+Soft-deletes the widget. Returns `204 No Content`.
+
+---
+
+### Rotate widget secret
+
+```
+POST /developer/apps/{APP_ID}/widgets/{WIDGET_ID}/rotate-secret
+```
+
+Invalidates the existing `widget_secret` and issues a new one.
+
+**Response**
+
+```json
+{
+  "data": {
+    "widget_id": "wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "widget_secret": "new-plain-secret-shown-once"
+  }
+}
+```
+
+---
+
+### Generate init token
+
+```
+POST /developer/apps/{APP_ID}/widgets/{WIDGET_ID}/init-token
+```
+
+See [Generating Init Tokens](/publisher-widget/init-token) for full details.
+
+---
+
+## Widget Session Endpoints
+
+These endpoints are called by the **widget iframe** — not directly by your server or frontend.
+
+### Get widget config (public)
+
+```
+GET /widget/{WIDGET_ID}/config
+```
+
+No authentication required. Called by the JS loader before the iframe mounts to fetch theme and enabled platforms.
+
+**Response**
+
+```json
+{
+  "data": {
+    "widget_id": "wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "name": "My Publisher Widget",
+    "enabled_platforms": ["instagram", "facebook"],
+    "theme": { "primary": "#6366f1" }
+  }
+}
+```
+
+---
+
+### Exchange init token for session
+
+```
+POST /widget/session/exchange
+```
+
+No authentication required. Validates the init token, enforces origin checking, and returns a widget session token.
+
+**Request**
+
+```json
+{ "token": "<init-token>" }
+```
+
+Must include an `Origin` header matching one of the widget's `allowed_origins`.
+
+**Response**
+
+```json
+{
+  "session_token": "<session-token>",
+  "expires_at": "2026-01-02T10:00:00Z",
+  "user": {
+    "external_id": "usr_abc123",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "avatar_url": null
+  },
+  "widget": {
+    "id": "wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "enabled_platforms": ["instagram", "facebook"],
+    "theme": { "primary": "#6366f1" }
+  }
+}
+```
+
+The `session_token` is a Bearer token valid for 24 hours.
+
+---
+
+### Get current session user
+
+```
+GET /widget/session/me
+Authorization: Bearer SESSION_TOKEN
+```
+
+**Response**
+
+```json
+{
+  "data": {
+    "external_id": "usr_abc123",
+    "meta": { "name": "Jane Doe", "email": "jane@example.com" },
+    "widget_id": "wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
+}
+```
+
+---
+
+### Revoke session
+
+```
+DELETE /widget/session
+Authorization: Bearer SESSION_TOKEN
+```
+
+Invalidates the session token immediately. Called when the user closes the widget. Returns `204 No Content`.
+
+---
+
+## Error Codes
+
+| HTTP | Description |
+|---|---|
+| `401` | Missing or invalid token |
+| `403` | Widget suspended, or origin not in `allowed_origins` |
+| `404` | Widget not found or not active |
+| `422` | Validation error — see `errors` object in response body |

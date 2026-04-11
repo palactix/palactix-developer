@@ -5,6 +5,7 @@ const meta = {
    "authentication": "Authentication",
    "connections": "Connections",
    "api-reference": "API Reference",
+   "publisher-widget": "Publisher Widget",
    "coming-soon": "Coming Soon"
 }
 

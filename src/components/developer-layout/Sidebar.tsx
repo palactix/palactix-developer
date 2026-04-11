@@ -14,7 +14,8 @@ import {
   LifeBuoy,
   CreditCard,
   LogOut,
-  ChevronLeft
+  ChevronLeft,
+  Puzzle,
 } from "lucide-react";
 import { AppSwitcher } from "./AppSwitcher";
 import { NavigationGroup } from "./NavigationGroup";
@@ -47,6 +48,7 @@ export const Sidebar = ({
     { name: "Logs", href: appId ? `/developer/apps/${appId}/logs` : "/developer/apps", icon: Activity },
     { name: "Rate Limits", href: appId ? `/developer/apps/${appId}/rate-limits` : "/developer/apps", icon: ShieldAlert },
     { name: "Users", href: appId ? `/developer/apps/${appId}/users` : "/developer/apps", icon: Users },
+    { name: "Widgets", href: appId ? `/developer/apps/${appId}/widgets` : "/developer/apps", icon: Puzzle },
     // { name: "Settings", href: appId ? `/developer/apps/${appId}/settings` : "/developer/apps", icon: Settings },
   ];
 

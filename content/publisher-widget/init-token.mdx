@@ -1,0 +1,183 @@
+---
+title: Issuing Widget Tokens
+description: Issue short-lived signed init tokens server-side to authenticate end users with the Publisher Widget.
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# Issuing Widget Tokens
+
+An **init token** is a short-lived, signed credential your server issues and passes to the Publisher Widget. When the widget iframe loads it exchanges the init token for a widget session.
+
+<Callout type="warning">
+  Always issue init tokens on your server. Never expose your `widget_secret` to the browser.
+</Callout>
+
+---
+
+## Endpoint
+
+```
+POST /widget/tokens
+```
+
+**Authentication:** No Bearer token required. Identify the widget via request headers:
+
+| Header | Description |
+|---|---|
+| `X-Widget-Id` | Widget ID (prefix `wgt_`) |
+| `X-Widget-Secret` | Widget secret — generated at creation or after rotating |
+
+<Callout type="info">
+  The API validates that the widget is active, its owning app is active, and all enabled platforms are verified before issuing a token.
+</Callout>
+
+---
+
+## Request Body
+
+```json
+{
+  "external_user_id": "usr_abc123",
+  "ttl": 300,
+  "meta": {
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "avatar_url": "https://example.com/avatar.jpg"
+  }
+}
+```
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `external_user_id` | string | ✓ | Your system's identifier for this user. Stored in the widget session log. |
+| `ttl` | integer | — | Token lifetime in seconds. Min `60`, default `300`, max `900`. |
+| `meta.name` | string | — | Display name shown inside the widget. |
+| `meta.email` | string | — | User email (informational only). |
+| `meta.avatar_url` | string | — | Avatar URL shown inside the widget. |
+
+---
+
+## Response
+
+```json
+{
+  "init_token": "<signed-encrypted-string>",
+  "expires_at": "2026-01-01T12:05:00Z"
+}
+```
+
+Pass `init_token` directly to `createWidget({ initToken: init_token, ... })`.
+
+---
+
+## Server Examples
+
+<Tabs items={['Node.js', 'Python', 'PHP', 'cURL']}>
+  <Tabs.Tab>
+    ```ts
+    // Using native fetch (Node 18+)
+    async function getInitToken(userId: string): Promise<string> {
+      const res = await fetch(
+        'https://api.palactix.com/widget/tokens',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Widget-Id': process.env.PALACTIX_WIDGET_ID!,
+            'X-Widget-Secret': process.env.PALACTIX_WIDGET_SECRET!,
+          },
+          body: JSON.stringify({
+            external_user_id: userId,
+            ttl: 300,
+            meta: { name: 'Jane Doe', email: 'jane@example.com' },
+          }),
+        }
+      );
+
+      if (!res.ok) throw new Error(`Palactix API error: ${res.status}`);
+      const { init_token } = await res.json() as { init_token: string };
+      return init_token;
+    }
+
+    // Next.js Route Handler example
+    // app/api/publisher-token/route.ts
+    export async function GET(req: Request) {
+      const session = await getSession(req); // your auth
+      const token = await getInitToken(session.userId);
+      return Response.json({ token });
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```python
+    import os
+    import httpx
+
+    def get_init_token(user_id: str) -> str:
+        resp = httpx.post(
+            'https://api.palactix.com/widget/tokens',
+            headers={
+                'Content-Type': 'application/json',
+                'X-Widget-Id': os.environ['PALACTIX_WIDGET_ID'],
+                'X-Widget-Secret': os.environ['PALACTIX_WIDGET_SECRET'],
+            },
+            json={
+                'external_user_id': user_id,
+                'ttl': 300,
+                'meta': {'name': 'Jane Doe', 'email': 'jane@example.com'},
+            },
+        )
+        resp.raise_for_status()
+        return resp.json()['init_token']
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```php
+    function getInitToken(string $userId): string
+    {
+        $response = Http::withHeaders([
+                'X-Widget-Id'     => env('PALACTIX_WIDGET_ID'),
+                'X-Widget-Secret' => env('PALACTIX_WIDGET_SECRET'),
+            ])
+            ->post('https://api.palactix.com/widget/tokens', [
+                'external_user_id' => $userId,
+                'ttl' => 300,
+                'meta' => ['name' => 'Jane Doe', 'email' => 'jane@example.com'],
+            ]);
+
+        throw_unless($response->successful(), RuntimeException::class, 'Palactix API error: '.$response->status());
+
+        return $response->json('init_token');
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    curl -X POST "https://api.palactix.com/widget/tokens" \
+      -H "Content-Type: application/json" \
+      -H "X-Widget-Id: $WIDGET_ID" \
+      -H "X-Widget-Secret: $WIDGET_SECRET" \
+      -d '{
+        "external_user_id": "usr_abc123",
+        "ttl": 300,
+        "meta": {
+          "name": "Jane Doe",
+          "email": "jane@example.com"
+        }
+      }'
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## Token lifetime guidance
+
+| Scenario | Recommended TTL |
+|---|---|
+| Token rendered into server-side HTML | `120s` — page loads are fast, minimal replay window |
+| Token fetched via AJAX on button click | `300s` (default) — gives the user time to interact |
+| Token fetched ahead of time | `600s` — useful for SPAs that pre-warm the widget |
+
+Tokens are single-use inside an origin check — once exchanged for a session they cannot be replayed.

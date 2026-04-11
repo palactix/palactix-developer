@@ -1,0 +1,185 @@
+---
+title: Integration Guide
+description: Add the Palactix Publisher Widget to your website with a CDN script tag or an npm import.
+---
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+# Integration Guide
+
+Add the Publisher Widget to your site in three steps:
+
+1. Add the loader script
+2. Generate an init token on your server
+3. Initialise the widget
+
+---
+
+<Steps>
+
+### Step 1 — Add the loader
+
+<Tabs items={['CDN (script tag)', 'npm']}>
+  <Tabs.Tab>
+    Add the script tag before the closing `</body>` tag on any page that will host the widget.
+
+    ```html
+    <script src="https://widgets.palactix.com/publisher/v1/loader.min.js"></script>
+    ```
+
+    The script exposes the global `PalactixPublisher` object.
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    npm install @palactix/publisher-widget
+    ```
+
+    ```ts
+    import { createWidget } from '@palactix/publisher-widget';
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### Step 2 — Generate an init token on your server
+
+<Callout type="warning">
+  Init tokens must be generated server-side. Never call the Palactix API directly from the browser — your `widget_secret` would be exposed.
+</Callout>
+
+Call the Palactix API from your backend whenever a user is about to open the widget:
+
+```bash
+POST https://api.palactix.com/developer/apps/{APP_ID}/widgets/{WIDGET_ID}/init-token
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "external_user_id": "usr_abc123",
+  "ttl": 300,
+  "meta": {
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "avatar_url": "https://example.com/avatar.jpg"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "token": "<signed-init-token>",
+  "expires_at": "2026-01-01T12:05:00Z"
+}
+```
+
+Return `token` to your frontend — it is valid for `ttl` seconds (default 300, max 900).
+
+See [Generating Init Tokens](/publisher-widget/init-token) for language-specific server examples.
+
+---
+
+### Step 3 — Initialise the widget
+
+Pass the `initToken` you received from your server to the loader:
+
+<Tabs items={['CDN (global)', 'ESM import']}>
+  <Tabs.Tab>
+    ```html
+    <button id="open-publisher">Publish</button>
+
+    <script>
+      document.getElementById('open-publisher').addEventListener('click', async () => {
+        // Fetch a fresh init token from YOUR backend endpoint
+        const { token } = await fetch('/api/publisher-token').then(r => r.json());
+
+        const widget = PalactixPublisher.init({
+          widgetId: 'wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+          initToken: token,
+          onReady: () => console.log('Widget ready'),
+          onClose: () => console.log('Widget closed'),
+        });
+
+        widget.open();
+      });
+    </script>
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts
+    import { createWidget } from '@palactix/publisher-widget';
+
+    document.getElementById('open-publisher')!.addEventListener('click', async () => {
+      const { token } = await fetch('/api/publisher-token').then(r => r.json());
+
+      const widget = createWidget({
+        widgetId: 'wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        initToken: token,
+        onReady: () => console.log('Widget ready'),
+        onClose: () => console.log('Widget closed'),
+      });
+
+      widget.open();
+    });
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+</Steps>
+
+---
+
+## Auto-initialise via data attributes
+
+If you prefer zero-JS setup, add `data-palactix-widget` to any element and the loader auto-initialises on `DOMContentLoaded`:
+
+```html
+<div
+  data-palactix-widget
+  data-widget-id="wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  data-init-token="<token-from-server>"
+></div>
+
+<script src="https://widgets.palactix.com/publisher/v1/loader.min.js"></script>
+```
+
+<Callout>
+  When using data attributes the init token must be rendered server-side into the HTML. Make sure your page is not cached at a CDN layer or the token will expire before the user loads the page.
+</Callout>
+
+---
+
+## Widget API reference
+
+| Method | Description |
+|---|---|
+| `createWidget(config)` | Initialises the widget. Returns a `PublisherWidget` handle. |
+| `widget.open()` | Opens the publisher panel. |
+| `widget.close()` | Closes the publisher panel without destroying it. |
+| `widget.destroy()` | Closes and removes all DOM nodes. Revokes the widget session. |
+
+**Config options:**
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `widgetId` | `string` | ✓ | Widget ID from the developer portal (prefix `wgt_`). |
+| `initToken` | `string` | ✓ | Short-lived signed token from your server. |
+| `target` | `string \| HTMLElement` | — | CSS selector or element to attach the launcher button to. Defaults to `document.body`. |
+| `onReady` | `() => void` | — | Fired when the iframe is ready. |
+| `onClose` | `() => void` | — | Fired when the user dismisses the widget. |
+
+---
+
+## Allowed origins
+
+Your widget will only load on domains you have explicitly whitelisted. Add origins in [your developer portal](/developer/apps) under **Widgets → Allowed Origins**.
+
+Example allowed origins:
+
+```
+https://yoursite.com
+https://app.yoursite.com
+http://localhost:3000
+```
