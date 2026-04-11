@@ -16,8 +16,8 @@ Your website                    Palactix
 ─────────────────               ──────────────────────────────
   1. User clicks Publish
         │
-  2. Your server generates  ──► POST /developer/apps/{id}/widgets/{widgetId}/init-token
-     a short-lived init token       Returns: { token, expires_at }
+  2. Your server generates  ──► POST /widget/tokens (server-side call using widget credentials)
+        a short-lived init token       Returns: { token, expires_at }
         │
   3. Loader opens the iframe ──► widgets.palactix.com/publisher
         │                              │
@@ -58,6 +58,6 @@ The widget surfaces only the platforms you have active credentials for in your d
 
 ## Next Steps
 
-- [Integration Guide](/publisher-widget/integration-guide) — add the widget to your site in minutes
-- [Generating Init Tokens](/publisher-widget/init-token) — server-side token generation
-- [Widget API Reference](/publisher-widget/api-reference) — full endpoint reference
+- [Integration Guide](/docs/publisher-widget/integration-guide) — add the widget to your site in minutes
+- [Generating Init Tokens](/docs/publisher-widget/init-token) — server-side token generation
+- [Widget API Reference](/docs/publisher-widget/api-reference) — full endpoint reference

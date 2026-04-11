@@ -9,7 +9,7 @@ import { Callout, Steps, Tabs } from 'nextra/components'
 
 Add the Publisher Widget to your site in three steps:
 
-1. Add the loader script
+1. Install or include the loader
 2. Generate an init token on your server
 3. Initialise the widget
 
@@ -19,7 +19,31 @@ Add the Publisher Widget to your site in three steps:
 
 ### Step 1 — Add the loader
 
-<Tabs items={['CDN (script tag)', 'npm']}>
+<Tabs items={['npm', 'CDN (script tag)']}>
+  <Tabs.Tab>
+    ```bash
+    npm install @palactix/publisher-widget
+    ```
+
+    ```ts
+    import { init } from '@palactix/publisher-widget';
+
+    document.getElementById('open-publisher')!.addEventListener('click', async () => {
+      // Fetch a fresh init token from YOUR backend endpoint
+      const { token } = await fetch('/api/publisher-token').then(r => r.json());
+
+      const widget = init({
+        token,
+        appUrl: 'https://app.palactix.com',
+        onReady: () => console.log('Widget ready'),
+        onClose: () => console.log('Widget closed'),
+      });
+
+      widget.publish();
+    });
+    ```
+  </Tabs.Tab>
+
   <Tabs.Tab>
     Add the script tag before the closing `</body>` tag on any page that will host the widget.
 
@@ -27,16 +51,7 @@ Add the Publisher Widget to your site in three steps:
     <script src="https://widgets.palactix.com/publisher/v1/loader.min.js"></script>
     ```
 
-    The script exposes the global `PalactixPublisher` object.
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-    npm install @palactix/publisher-widget
-    ```
-
-    ```ts
-    import { createWidget } from '@palactix/publisher-widget';
-    ```
+    The script exposes the global `PalactixWidget` object.
   </Tabs.Tab>
 </Tabs>
 
@@ -48,11 +63,14 @@ Add the Publisher Widget to your site in three steps:
   Init tokens must be generated server-side. Never call the Palactix API directly from the browser — your `widget_secret` would be exposed.
 </Callout>
 
-Call the Palactix API from your backend whenever a user is about to open the widget:
+Call the Palactix API from your backend whenever a user is about to open the widget. The public token issuance
+endpoint is `POST /widget/tokens` and is authenticated using the widget credentials (Basic auth).
 
-```bash
-POST https://api.palactix.com/developer/apps/{APP_ID}/widgets/{WIDGET_ID}/init-token
-Authorization: Bearer YOUR_ACCESS_TOKEN
+Example (high level):
+
+```http
+POST https://api.palactix.com/widget/tokens
+Authorization: Basic BASE64(widgetId:widgetSecret)
 Content-Type: application/json
 
 {
@@ -60,22 +78,13 @@ Content-Type: application/json
   "ttl": 300,
   "meta": {
     "name": "Jane Doe",
-    "email": "jane@example.com",
-    "avatar_url": "https://example.com/avatar.jpg"
+    "email": "jane@example.com"
   }
 }
 ```
 
-Response:
-
-```json
-{
-  "token": "<signed-init-token>",
-  "expires_at": "2026-01-01T12:05:00Z"
-}
-```
-
-Return `token` to your frontend — it is valid for `ttl` seconds (default 300, max 900).
+Response from the Palactix API contains `init_token`. Your server should extract that value and return
+a simple JSON object to your frontend, for example `{ "token": "<init_token>" }`.
 
 See [Generating Init Tokens](/publisher-widget/init-token) for language-specific server examples.
 
@@ -83,46 +92,47 @@ See [Generating Init Tokens](/publisher-widget/init-token) for language-specific
 
 ### Step 3 — Initialise the widget
 
-Pass the `initToken` you received from your server to the loader:
+Pass the `token` you received from your server to the loader:
 
-<Tabs items={['CDN (global)', 'ESM import']}>
+<Tabs items={['npm', 'CDN (global)']}>
+  <Tabs.Tab>
+    ```ts
+    import { init } from '@palactix/publisher-widget';
+
+    document.getElementById('open-publisher')!.addEventListener('click', async () => {
+      const { token } = await fetch('/api/publisher-token').then(r => r.json());
+
+      const widget = init({
+        token,
+        appUrl: 'https://app.palactix.com',
+        onReady: () => console.log('Widget ready'),
+        onClose: () => console.log('Widget closed'),
+        onPublished: (post) => console.log('Published', post),
+      });
+
+      widget.publish();
+    });
+    ```
+  </Tabs.Tab>
+
   <Tabs.Tab>
     ```html
     <button id="open-publisher">Publish</button>
 
     <script>
       document.getElementById('open-publisher').addEventListener('click', async () => {
-        // Fetch a fresh init token from YOUR backend endpoint
         const { token } = await fetch('/api/publisher-token').then(r => r.json());
 
-        const widget = PalactixPublisher.init({
-          widgetId: 'wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-          initToken: token,
+        const widget = PalactixWidget.init({
+          token,
+          appUrl: 'https://app.palactix.com',
           onReady: () => console.log('Widget ready'),
           onClose: () => console.log('Widget closed'),
         });
 
-        widget.open();
+        widget.publish();
       });
     </script>
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```ts
-    import { createWidget } from '@palactix/publisher-widget';
-
-    document.getElementById('open-publisher')!.addEventListener('click', async () => {
-      const { token } = await fetch('/api/publisher-token').then(r => r.json());
-
-      const widget = createWidget({
-        widgetId: 'wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        initToken: token,
-        onReady: () => console.log('Widget ready'),
-        onClose: () => console.log('Widget closed'),
-      });
-
-      widget.open();
-    });
     ```
   </Tabs.Tab>
 </Tabs>
@@ -133,20 +143,20 @@ Pass the `initToken` you received from your server to the loader:
 
 ## Auto-initialise via data attributes
 
-If you prefer zero-JS setup, add `data-palactix-widget` to any element and the loader auto-initialises on `DOMContentLoaded`:
+If you prefer zero-JS integration the loader can auto-initialise elements marked with `data-palactix-widget`.
 
 ```html
 <div
   data-palactix-widget
-  data-widget-id="wgt_xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  data-init-token="<token-from-server>"
+  data-token="<token-from-server>"
+  data-app-url="https://app.palactix.com"
 ></div>
 
 <script src="https://widgets.palactix.com/publisher/v1/loader.min.js"></script>
 ```
 
 <Callout>
-  When using data attributes the init token must be rendered server-side into the HTML. Make sure your page is not cached at a CDN layer or the token will expire before the user loads the page.
+  When using data attributes the init token must be rendered server-side into the HTML. Make sure your page is not cached at a CDN layer or the token will not be usable when loaded by the browser.
 </Callout>
 
 ---
@@ -155,18 +165,18 @@ If you prefer zero-JS setup, add `data-palactix-widget` to any element and the l
 
 | Method | Description |
 |---|---|
-| `createWidget(config)` | Initialises the widget. Returns a `PublisherWidget` handle. |
-| `widget.open()` | Opens the publisher panel. |
-| `widget.close()` | Closes the publisher panel without destroying it. |
+| `init(config)` | Initialises the widget. Returns a `PublisherWidget` handle. |
+| `widget.publish(preFill?)` | Opens the publisher panel and optionally pre-fills caption/media. |
 | `widget.destroy()` | Closes and removes all DOM nodes. Revokes the widget session. |
 
 **Config options:**
 
 | Option | Type | Required | Description |
 |---|---|---|---|
-| `widgetId` | `string` | ✓ | Widget ID from the developer portal (prefix `wgt_`). |
-| `initToken` | `string` | ✓ | Short-lived signed token from your server. |
-| `target` | `string \| HTMLElement` | — | CSS selector or element to attach the launcher button to. Defaults to `document.body`. |
+| `token` | `string` | ✓ | Short-lived signed token your server returns to the frontend. Pass this directly to `init()` as `token`. |
+| `appUrl` | `string` | — | Override the publisher iframe URL (useful for local dev). |
+| `primary` | `string` | — | CSS color hex used to theme the widget. |
+| `mode` | `string` | — | `'modal'` (default) or `'drawer'`. |
 | `onReady` | `() => void` | — | Fired when the iframe is ready. |
 | `onClose` | `() => void` | — | Fired when the user dismisses the widget. |
 

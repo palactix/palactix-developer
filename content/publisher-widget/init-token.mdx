@@ -21,12 +21,11 @@ An **init token** is a short-lived, signed credential your server issues and pas
 POST /widget/tokens
 ```
 
-**Authentication:** No Bearer token required. Identify the widget via request headers:
+**Authentication:** No Bearer token required. The endpoint expects widget credentials via HTTP Basic auth:
 
-| Header | Description |
-|---|---|
-| `X-Widget-Id` | Widget ID (prefix `wgt_`) |
-| `X-Widget-Secret` | Widget secret — generated at creation or after rotating |
+```
+Authorization: Basic BASE64(widgetId:widgetSecret)
+```
 
 <Callout type="info">
   The API validates that the widget is active, its owning app is active, and all enabled platforms are verified before issuing a token.
@@ -60,6 +59,8 @@ POST /widget/tokens
 
 ## Response
 
+The Palactix API returns the raw init token in the `init_token` field. Example response from the Palactix API:
+
 ```json
 {
   "init_token": "<signed-encrypted-string>",
@@ -67,7 +68,7 @@ POST /widget/tokens
 }
 ```
 
-Pass `init_token` directly to `createWidget({ initToken: init_token, ... })`.
+Your server should extract `init_token` and return a small JSON object to the browser such as `{ "token": "<init_token>" }` — the widget initializer expects the frontend payload to contain `token`.
 
 ---
 
@@ -78,34 +79,33 @@ Pass `init_token` directly to `createWidget({ initToken: init_token, ... })`.
     ```ts
     // Using native fetch (Node 18+)
     async function getInitToken(userId: string): Promise<string> {
-      const res = await fetch(
-        'https://api.palactix.com/widget/tokens',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Widget-Id': process.env.PALACTIX_WIDGET_ID!,
-            'X-Widget-Secret': process.env.PALACTIX_WIDGET_SECRET!,
-          },
-          body: JSON.stringify({
-            external_user_id: userId,
-            ttl: 300,
-            meta: { name: 'Jane Doe', email: 'jane@example.com' },
-          }),
-        }
-      );
+      const credential = Buffer.from(`${process.env.PALACTIX_WIDGET_ID}:${process.env.PALACTIX_WIDGET_SECRET}`).toString('base64');
+      const res = await fetch('https://api.palactix.com/widget/tokens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${credential}`,
+        },
+        body: JSON.stringify({
+          external_user_id: userId,
+          ttl: 300,
+          meta: { name: 'Jane Doe', email: 'jane@example.com' },
+        }),
+      });
 
       if (!res.ok) throw new Error(`Palactix API error: ${res.status}`);
-      const { init_token } = await res.json() as { init_token: string };
-      return init_token;
+      const body = await res.json();
+      // Palactix returns `init_token` — return the token string for use by your frontend
+      return body.init_token as string;
     }
 
     // Next.js Route Handler example
     // app/api/publisher-token/route.ts
     export async function GET(req: Request) {
       const session = await getSession(req); // your auth
-      const token = await getInitToken(session.userId);
-      return Response.json({ token });
+      const initToken = await getInitToken(session.userId);
+      // Return a small JSON payload to the browser. The widget expects `{ token }`.
+      return Response.json({ token: initToken });
     }
     ```
   </Tabs.Tab>
@@ -113,14 +113,15 @@ Pass `init_token` directly to `createWidget({ initToken: init_token, ... })`.
     ```python
     import os
     import httpx
+    import base64
 
     def get_init_token(user_id: str) -> str:
+        credential = base64.b64encode(f"{os.environ['PALACTIX_WIDGET_ID']}:{os.environ['PALACTIX_WIDGET_SECRET']}".encode()).decode()
         resp = httpx.post(
             'https://api.palactix.com/widget/tokens',
             headers={
                 'Content-Type': 'application/json',
-                'X-Widget-Id': os.environ['PALACTIX_WIDGET_ID'],
-                'X-Widget-Secret': os.environ['PALACTIX_WIDGET_SECRET'],
+                'Authorization': f"Basic {credential}",
             },
             json={
                 'external_user_id': user_id,
@@ -136,19 +137,22 @@ Pass `init_token` directly to `createWidget({ initToken: init_token, ... })`.
     ```php
     function getInitToken(string $userId): string
     {
-        $response = Http::withHeaders([
-                'X-Widget-Id'     => env('PALACTIX_WIDGET_ID'),
-                'X-Widget-Secret' => env('PALACTIX_WIDGET_SECRET'),
-            ])
-            ->post('https://api.palactix.com/widget/tokens', [
-                'external_user_id' => $userId,
-                'ttl' => 300,
-                'meta' => ['name' => 'Jane Doe', 'email' => 'jane@example.com'],
-            ]);
+      $basic = base64_encode(env('PALACTIX_WIDGET_ID') . ':' . env('PALACTIX_WIDGET_SECRET'));
 
-        throw_unless($response->successful(), RuntimeException::class, 'Palactix API error: '.$response->status());
+      $response = Http::withHeaders([
+          'Authorization' => "Basic {$basic}",
+          'Accept' => 'application/json',
+        ])
+        ->post('https://api.palactix.com/widget/tokens', [
+          'external_user_id' => $userId,
+          'ttl' => 300,
+          'meta' => ['name' => 'Jane Doe', 'email' => 'jane@example.com'],
+        ]);
 
-        return $response->json('init_token');
+      throw_unless($response->successful(), RuntimeException::class, 'Palactix API error: '.$response->status());
+
+      // Palactix returns `init_token` — return it for your frontend proxy to forward as `{ token }`.
+      return $response->json('init_token');
     }
     ```
   </Tabs.Tab>
@@ -156,8 +160,7 @@ Pass `init_token` directly to `createWidget({ initToken: init_token, ... })`.
     ```bash
     curl -X POST "https://api.palactix.com/widget/tokens" \
       -H "Content-Type: application/json" \
-      -H "X-Widget-Id: $WIDGET_ID" \
-      -H "X-Widget-Secret: $WIDGET_SECRET" \
+      -H "Authorization: Basic $(echo -n "$WIDGET_ID:$WIDGET_SECRET" | base64)" \
       -d '{
         "external_user_id": "usr_abc123",
         "ttl": 300,
