@@ -16,7 +16,6 @@ type ProductItem = {
   href: string;
   label: string;
   desc: string;
-  highlighted?: boolean;
 };
 
 type NavLink = {
@@ -30,7 +29,6 @@ const PRODUCTS: ProductItem[] = [
     href: "/products/white-label-social-media-management",
     label: "White-label Scheduler",
     desc: "A complete social media management app ready for your brand.",
-    highlighted: true,
   },
   {
     icon: Code2,
@@ -69,9 +67,7 @@ function ProductDropdownItem({
     <Link
       href={item.href}
       onClick={onClick}
-      className={`flex items-start gap-4 p-3 rounded-lg transition-colors ${
-        item.highlighted ? "hover:bg-primary/30" : "hover:bg-muted"
-      }`}
+      className={`flex items-start gap-4 p-3 rounded-lg transition-colors hover:bg-primary/30`}
     >
       <div className="bg-primary/10 p-2.5 rounded-md mt-0.5 shrink-0">
         <Icon className="w-5 h-5 text-primary" />
