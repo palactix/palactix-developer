@@ -23,7 +23,6 @@ import {
   Palette,
   HardDrive,
   Gauge,
-  ServerCrash,
   CheckCircle2,
   Megaphone,
   LineChart,
