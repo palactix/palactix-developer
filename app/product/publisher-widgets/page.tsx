@@ -53,7 +53,7 @@ const softwareSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Palactix Publisher Widget",
-  "applicationCategory": "DeveloperApplication",
+  "applicationCategory": "BusinessApplication",
   "applicationSubCategory": "SocialMediaApplication",
   "operatingSystem": "Web",
   "description":
