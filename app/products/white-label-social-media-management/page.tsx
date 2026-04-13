@@ -4,9 +4,9 @@ import { Footer } from "@/components/home/Footer";
 import WhiteLabelSchedulerClient from "./WhiteLabelSchedulerClient";
 
 export const metadata: Metadata = {
-  title: "White-Label Social Management Platform for Agencies — Own Your Stack | Palactix",
+  title: "White-Label Social Management Platform for Agencies - BYOK",
   description:
-    "Run a fully white-label social media management platform under your own brand and domain. BYO OAuth, unlimited clients, unlimited team members. No vendor lock-in. Built for agencies.",
+    "Run a fully white-label social media management platform under your own brand and domain. BYO OAuth, unlimited clients, unlimited team members. Built for agencies.",
   keywords: [
     "white label social media management platform",
     "agency social media management",
