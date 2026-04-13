@@ -374,7 +374,7 @@ export default function UnifiedSocialApisClient() {
                 ["6–12 months engineering",         "Before you ship one feature"],
               ].map(([item, sub], i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full border-2 border-destructive/30 shrink-0 mt-0.5" />
+                  <div className="w-5 h-5 rounded-full bg-destructive/70 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">{item}</p>
                     <p className="text-xs text-muted-foreground/60">{sub}</p>

@@ -61,7 +61,7 @@ function useInView(threshold = 0.15) {
    Code snippets
 ───────────────────────────────────────── */
 const snippets: Record<string, string> = {
-  React: `import Palactix from '@palactix/widget';
+  React: `import Palactix from '@palactix/publisher-widget';
 
 const widget = new Palactix({
   token: 'wgt_live_xxxxxxxxxxxx',
@@ -90,7 +90,7 @@ export function PublishButton() {
   Publish to Social
 </button>`,
   Vue: `<script setup lang="ts">
-import Palactix from '@palactix/widget';
+import Palactix from '@palactix/publisher-widget';
 
 const widget = new Palactix({
   token: 'wgt_live_xxxxxxxxxxxx',
@@ -166,7 +166,7 @@ export default function WidgetPageClient() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 border border-primary/30 bg-primary/5 text-primary text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded-full">
               <Package className="w-3.5 h-3.5" />
-              npm install @palactix/widget
+              npm install @palactix/publisher-widget
             </div>
 
             {/* Headline */}
@@ -316,7 +316,7 @@ export default function WidgetPageClient() {
                 ["6–12 months of development", "Before you ship one feature"],
               ].map(([item, sub], i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full border-2 border-destructive/30 shrink-0 mt-0.5" />
+                  <div className="w-5 h-5 rounded-full bg-destructive/70 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">{item}</p>
                     <p className="text-xs text-muted-foreground/60">{sub}</p>
