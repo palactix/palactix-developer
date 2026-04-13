@@ -27,20 +27,20 @@ type NavLink = {
 const PRODUCTS: ProductItem[] = [
   {
     icon: CalendarDays,
-    href: "/product/white-label-scheduler",
+    href: "/products/white-label-social-media-management",
     label: "White-label Scheduler",
     desc: "A complete social media management app ready for your brand.",
     highlighted: true,
   },
   {
     icon: Code2,
-    href: "/product/unified-social-apis",
+    href: "/products/unified-social-apis",
     label: "Unified Social APIs",
     desc: "One API to publish, fetch, and analyze across all major social networks.",
   },
   {
     icon: Blocks,
-    href: "/product/publisher-widgets",
+    href: "/products/publisher-widgets",
     label: "Publisher Widgets",
     desc: "Drop-in scheduling components for your existing SaaS.",
   },
