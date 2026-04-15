@@ -153,12 +153,12 @@ export function Footer() {
       </div>
       </Container>
       <div className="w-full flex justify-center pointer-events-none select-none mt-8">
-        <h1
+        <span
           aria-hidden="true"
           className="text-[clamp(120px,16vw,200px)] leading-none font-black tracking-widest text-primary/20 pointer-events-none select-none"
         >
           PALACTIX
-        </h1>
+        </span>
       </div>
     </footer>
   );
