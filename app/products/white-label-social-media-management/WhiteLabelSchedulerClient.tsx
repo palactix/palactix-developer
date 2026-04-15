@@ -122,7 +122,7 @@ export default function WhiteLabelSchedulerClient() {
                   <path d="M2 9C90 1 230 1 318 9" stroke="#2ea44f" strokeWidth="3" strokeLinecap="round" opacity="0.4"/>
                 </svg>
               </span>{" "}
-              Social Scheduler
+              Social Scheduler Platform
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
