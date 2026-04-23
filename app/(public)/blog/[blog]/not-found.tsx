@@ -9,7 +9,7 @@ export default function BlogNotFound() {
       <Container>
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <FileQuestion className="h-20 w-20 text-muted-foreground mb-6" />
-          <h1 className="text-4xl font-bold mb-4">Blog Post Not Found</h1>
+          <h2 className="text-4xl font-bold mb-4">Blog Post Not Found</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-md">
             The blog post you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
