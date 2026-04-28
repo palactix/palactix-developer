@@ -144,7 +144,7 @@ export default function WhiteLabelSchedulerClient() {
                 className="h-13 px-8 bg-primary hover:bg-primary/90 text-white rounded-full text-base font-semibold shadow-lg shadow-primary/25"
                 asChild
               >
-                <Link href="/agency/signup">
+                <Link href="/auth/signup">
                   Start your 14-day Evaluation <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
@@ -794,7 +794,7 @@ export default function WhiteLabelSchedulerClient() {
                 Queue-based delivery, automatic recovery, and per-client isolation keep everything running.
               </p>
               <Button size="lg" className="rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20" asChild>
-                <Link href="/agency/signup">Start your 14-day Evaluation <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                <Link href="/auth/signup">Start your 14-day Evaluation <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
             </div>
 
@@ -904,7 +904,7 @@ export default function WhiteLabelSchedulerClient() {
             className="h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-full text-base font-semibold shadow-xl shadow-primary/25"
             asChild
           >
-            <Link href="/agency/signup">
+            <Link href="/auth/signup">
               Start your 14-day Evaluation <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </Button>

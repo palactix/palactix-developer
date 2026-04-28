@@ -24,6 +24,8 @@ const footerLinks = {
     { href: "/docs", label: "Documentation" },
     { href: "/developer", label: "API Reference" },
     { href: "/blog", label: "Blog" },
+    { href: "/tools/savings-calculator", label: "Savings Calculator" },
+    
   ],
   company: [
     { href: "/why-palactix-exists", label: "Why Palactix" },
