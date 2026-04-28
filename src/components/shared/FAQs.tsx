@@ -6,10 +6,9 @@ import { generateFAQSchema } from "@/lib/seo/faqSchema";
 export const FAQs = ({ faqs }: { faqs: Array<{ question: string; answer: string }> }) => {
   return (
     <section className="py-20">
-      <Script
+      <script
         id="faq-schema"
         type="application/ld+json"
-        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(generateFAQSchema(faqs)),
         }}
