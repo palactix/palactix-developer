@@ -100,17 +100,6 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
         }}
       />
 
-      {/* FAQ Schema */}
-      {blog.faqs && blog.faqs.length > 0 && (
-        <script
-          id="faq-schema"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateFAQSchema(blog.faqs)),
-          }}
-        />
-      )}
-
       {/* Breadcrumb Schema */}
       <script
         id="breadcrumb-schema"
