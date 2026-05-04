@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import { Navbar } from "@/components/home/Navbar";
 import { HeroSection } from "@/components/home/HeroSection";
 import { PlatformsSection } from "@/components/home/PlatformsSection";
@@ -12,6 +13,7 @@ import { FinalCTA } from "@/components/home/FinalCTA";
 import Script from "next/script";
 
 export default function HomePage() {
+  redirect('/products/publisher-widgets')
 
   return (
     <div className="min-h-screen">

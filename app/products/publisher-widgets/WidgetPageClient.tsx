@@ -1,54 +1,24 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
-  Paintbrush,
-  Zap,
-  Lock,
-  Smartphone,
-  BarChart3,
-  Wrench,
-  RefreshCw,
-  Clock,
-  Globe,
-  Dumbbell,
-  BookOpen,
-  Newspaper,
-  LayoutGrid,
-  Check,
-  Copy,
-  ArrowRight,
-  Terminal,
-  Package,
-  MousePointerClick,
-  Send,
+  Check, Copy, ArrowRight, X as XIcon,
+  Home, Building2, Dumbbell, ShoppingBag,
+  Key, CalendarDays, Zap, AlertTriangle, Minus,
 } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FAQs } from "@/components/shared/FAQs";
 
-/* ─────────────────────────────────────────
-   Shared scroll-reveal hook
-───────────────────────────────────────── */
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
       { threshold }
     );
     obs.observe(el);
@@ -57,91 +27,130 @@ function useInView(threshold = 0.15) {
   return [ref, visible] as const;
 }
 
-/* ─────────────────────────────────────────
-   Code snippets
-───────────────────────────────────────── */
-const snippets: Record<string, string> = {
-  React: `import Palactix from '@palactix/publisher-widget';
-
-const widget = new Palactix({
-  token: 'wgt_live_xxxxxxxxxxxx',
-});
-
-export function PublishButton() {
+function CodeBlock({ code }: { code: string }) {
   return (
-    <button
-      onClick={() => widget.publish({ content: 'Hello World!' })}
-      className="btn-primary"
-    >
-      Publish to Social
-    </button>
-  );
-}`,
-  HTML: `<!-- Drop the script tag anywhere -->
-<script src="https://cdn.palactix.com/widget.js"></script>
-
-<script>
-  const widget = new Palactix({
-    token: 'wgt_live_xxxxxxxxxxxx',
-  });
-</script>
-
-<button onclick="widget.publish({ content: 'Hello!' })">
-  Publish to Social
-</button>`,
-  Vue: `<script setup lang="ts">
-import Palactix from '@palactix/publisher-widget';
-
-const widget = new Palactix({
-  token: 'wgt_live_xxxxxxxxxxxx',
-});
-</script>
-
-<template>
-  <button @click="widget.publish({ content: 'Hello!' })">
-    Publish to Social
-  </button>
-</template>`,
-};
-
-/* ─────────────────────────────────────────
-   Syntax highlight  (minimal token colouring)
-───────────────────────────────────────── */
-function Code({ code }: { code: string }) {
-  return (
-    <pre className="text-[13px] leading-6 font-mono overflow-x-auto p-6 text-[#e2e8f0]">
+    <pre className="text-[13px] leading-[1.75] font-mono overflow-x-auto p-6">
       {code.split("\n").map((line, i) => (
-        <div key={i}>
-          {line
-            .split(/(\'[^\']*\'|"[^"]*"|`[^`]*`|\/\/.*|import|from|const|new|return|export|function|class|onclick|@click)/g)
-            .map((part, j) => {
-              if (/^(import|from|const|new|return|export|function|class)$/.test(part))
-                return <span key={j} className="text-[#ff79c6]">{part}</span>;
-              if (/^(\'|"|`)/.test(part))
-                return <span key={j} className="text-[#f1fa8c]">{part}</span>;
-              if (/^\/\//.test(part))
-                return <span key={j} className="text-[#6272a4]">{part}</span>;
-              if (/^(onclick|@click)$/.test(part))
-                return <span key={j} className="text-[#50fa7b]">{part}</span>;
-              return <span key={j}>{part}</span>;
-            })}
+        <div key={i} className="flex">
+          <span className="select-none w-7 shrink-0 text-right mr-5 text-white/20 text-[11px] leading-[2.1]">
+            {i + 1}
+          </span>
+          <span>
+            {line
+              .split(/(\'[^\']*\'|"[^"]*"|`[^`]*`|\/\/[^\n]*|import|from|const|new|return|export|function|class)/g)
+              .map((part, j) => {
+                if (/^(import|from|const|new|return|export|function|class)$/.test(part))
+                  return <span key={j} className="text-[#c792ea]">{part}</span>;
+                if (/^(['"`])/.test(part))
+                  return <span key={j} className="text-[#c3e88d]">{part}</span>;
+                if (/^\/\//.test(part))
+                  return <span key={j} className="text-[#546e7a]">{part}</span>;
+                return <span key={j} className="text-[#cdd3de]">{part}</span>;
+              })}
+          </span>
         </div>
       ))}
     </pre>
   );
 }
 
-export default function WidgetPageClient() {
-  const [tab, setTab] = useState("React");
-  const [copied, setCopied] = useState(false);
+const PLATFORMS = [
+  { name: "Instagram", abbr: "IG", color: "#E1306C", types: "Posts · Stories · Reels" },
+  { name: "TikTok",    abbr: "TK", color: "#010101", types: "Videos" },
+  { name: "LinkedIn",  abbr: "LI", color: "#0A66C2", types: "Posts · Articles" },
+  { name: "X / Twitter", abbr: "X", color: "#555",  types: "Posts · Threads" },
+  { name: "Facebook",  abbr: "FB", color: "#1877F2", types: "Posts · Pages" },
+  { name: "YouTube",   abbr: "YT", color: "#FF0000", types: "Shorts · Videos" },
+];
 
-  const [heroRef, heroVisible] = useInView(0.05);
-  const [stepsRef, stepsVisible] = useInView(0.1);
-  const [featRef, featVisible] = useInView(0.08);
-  const [whoRef, whoVisible] = useInView(0.1);
+const STEPS = [
+  {
+    n: "01",
+    title: "Install the package",
+    desc: "One command. Zero peer dependencies.",
+    file: "terminal",
+    code: `$ npm install @palactix/publisher-widget\n\n+ @palactix/publisher-widget@0.1.2\n✓ Installed in 2.3s\n✓ TypeScript definitions included`,
+  },
+  {
+    n: "02",
+    title: "Initialize once on page load",
+    desc: "Call init() once — pre-loads the iframe in the background.",
+    file: "app.ts",
+    code: `import { init } from '@palactix/publisher-widget';\n\n// Call once on page load — pre-loads the iframe in the background\nconst widget = init({ token: '<YOUR_INIT_TOKEN>' });`,
+  },
+  {
+    n: "03",
+    title: "Trigger publish on any button click",
+    desc: "Call widget.publish() from anywhere in your app.",
+    file: "publish-button.ts",
+    code: `document.getElementById('publish-btn').addEventListener('click', () => {\n  widget.publish();\n});`,
+  },
+];
+
+const PAINss = [
+  { label: "OAuth for 6+ platforms",   badge: "3–4 months" },
+  { label: "Meta App Review",           badge: "2–3 weeks" },
+  { label: "TikTok API audit",          badge: "7–14 days" },
+  { label: "X API pricing spike",       badge: "$200 → $5k" },
+  { label: "Instagram token expiry",    badge: "Every 60 days" },
+  { label: "Platform deprecations",     badge: "Every 90 days" },
+  { label: "Rate limit management",     badge: "Ongoing" },
+  { label: "50+ error code handlers",   badge: "Weeks" },
+];
+
+
+const PAIN_WITHOUT = [
+  { label: "OAuth implementation for 6 platforms", badge: "3–4 months" },
+  { label: "Token refresh automation", badge: "Weeks" },
+  { label: "Composer UI with previews", badge: "2–3 months" },
+  { label: "Rate limit tracking & retry", badge: "Ongoing" },
+  { label: "Platform deprecation monitoring", badge: "Every 90 days" },
+  { label: "Error handling (50+ codes)", badge: "Weeks" },
+  { label: "Media format conversion", badge: "Per platform" },
+  { label: "Post scheduling & queuing", badge: "2–4 weeks" },
+];
+
+const PAIN_WITH = [
+  { label: "OAuth implementation for 6 platforms", status: "✓ Built-in" },
+  { label: "Token refresh automation", status: "✓ Automatic" },
+  { label: "Composer UI with previews", status: "✓ Ready" },
+  { label: "Rate limit tracking & retry", status: "✓ Handled" },
+  { label: "Platform deprecation monitoring", status: "✓ We track" },
+  { label: "Error handling (50+ codes)", status: "✓ Covered" },
+  { label: "Media format conversion", status: "✓ Done" },
+  { label: "Post scheduling & queuing", status: "✓ Included" },
+];
+
+const USE_CASES = [
+  { icon: Home,        title: "Real Estate CRMs",     desc: "Auto-post new listings to Instagram, Facebook, and LinkedIn the moment they're added to your system." },
+  { icon: Building2,   title: "Franchise Management",  desc: "Let each location post under the brand account with localized content and approval workflows." },
+  { icon: Dumbbell,    title: "Sports & Wellness",     desc: "Enable clubs and trainers to share updates, events, and achievements across every platform." },
+  { icon: ShoppingBag, title: "E-commerce Platforms", desc: "Let merchants share new products to their social accounts directly from your dashboard." },
+];
+
+const FAQS = [
+  { question: "What platforms do you support?",               answer: "Instagram, TikTok, LinkedIn, X/Twitter, Facebook, YouTube. More coming based on customer requests." },
+  { question: "Do I need to create OAuth apps per platform?", answer: "Yes for BYOK (your brand on auth screens). We provide step-by-step guides — about 20 minutes per platform." },
+  { question: "Can I use your OAuth apps instead?",           answer: "Not currently. BYOK is our differentiator — your users stay connected to YOUR brand, not ours." },
+  { question: "What happens if a post fails?",                answer: "We retry automatically and fire a webhook. Users can re-publish from your app with one click." },
+  { question: "Do you store my users' content?",              answer: "Only temporarily for scheduling. Published posts are removed from our systems within 30 days." },
+  { question: "Can I customize the widget appearance?",       answer: "Yes — pass theme colors via props. Full customization is covered in our documentation." },
+  { question: "What if I exceed 100 posts early?",            answer: "$0.01 per post after that, billed at month end. No surprises." },
+  { question: "Is there a free trial?",                       answer: "Yes — 14 days, no credit card required, all features enabled." },
+  { question: "What if I need custom features?",              answer: "Reach out via the contact page. For larger customers, we build custom features." },
+];
+
+export default function WidgetPageClient() {
+  const [demoOpen, setDemoOpen]   = useState(false);
+  const [copied, setCopied]       = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
+
+  const [problemRef,   problemVisible]   = useInView(0.08);
+  const [featuresRef,  featuresVisible]  = useInView(0.05);
+  const [useCasesRef,  useCasesVisible]  = useInView(0.08);
 
   const copy = () => {
-    navigator.clipboard.writeText(snippets[tab]);
+    navigator.clipboard.writeText("npm install @palactix/publisher-widget");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -149,602 +158,849 @@ export default function WidgetPageClient() {
   return (
     <div className="overflow-x-hidden">
 
-      {/* ══════════════════════════════════════
-          1. HERO
-      ══════════════════════════════════════ */}
-      <section className="relative pt-36 pb-28 overflow-hidden">
-        {/* Gradient orb */}
-        <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-225 h-150 rounded-full bg-primary/10 blur-[120px]" />
-
-        <Container>
+      {/* ────────────────────────────────────────
+          DEMO POPUP
+      ──────────────────────────────────────── */}
+      {demoOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setDemoOpen(false)}
+        >
           <div
-            ref={heroRef}
-            className={`flex flex-col items-center text-center gap-8 transition-all duration-700 ${
-              heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-            }`}
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-8"
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 border border-primary/30 bg-primary/5 text-primary text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded-full">
-              <Package className="w-3.5 h-3.5" />
-              npm install @palactix/publisher-widget
+            <button
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              onClick={() => setDemoOpen(false)}
+            >
+              <XIcon className="w-5 h-5" />
+            </button>
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-2">Live Demo</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">See the widget in action</h2>
+            <p className="text-sm text-gray-500 mb-8">
+              Interactive demo coming soon. Reach out for a live walkthrough.
+            </p>
+            <div className="flex items-center justify-center h-44 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 mb-6">
+              <p className="text-sm text-gray-400">[ Demo Placeholder ]</p>
             </div>
+            <div className="flex gap-3">
+              <Button
+                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white rounded-xl h-11"
+                asChild
+              >
+                <Link href="/contact-us">Talk to founder</Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl h-11 border-gray-200"
+                onClick={() => setDemoOpen(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ────────────────────────────────────────
+          1 · HERO  (dark, full-bleed)
+      ──────────────────────────────────────── */}
+      <section className="relative bg-gray-950 pt-36 pb-24 overflow-hidden">
+        {/* Grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              "linear-gradient(white 1px,transparent 1px),linear-gradient(90deg,white 1px,transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+        {/* Gradient orbs */}
+        <div
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[600px] opacity-20 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse,#2ea44f,transparent 65%)" }}
+        />
+        <div
+          className="absolute top-24 right-0 w-72 h-72 opacity-10 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse,#6366f1,transparent 65%)" }}
+        />
+
+        <Container className="relative z-10">
+          <div className="flex flex-col items-center text-center">
+            {/* Clickable npm install badge */}
+            <button
+              onClick={copy}
+              className="group inline-flex items-center gap-2.5 bg-white/5 hover:bg-white/8 border border-white/10 hover:border-white/20 rounded-full px-5 py-2 mb-10 transition-all duration-200"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+              <code className="text-sm font-mono text-white/50 group-hover:text-white/70 transition-colors">
+                npm install @palactix/publisher-widget
+              </code>
+              {copied
+                ? <Check className="w-3.5 h-3.5 text-green-400 shrink-0" />
+                : <Copy className="w-3.5 h-3.5 text-white/30 group-hover:text-white/50 shrink-0 transition-colors" />
+              }
+            </button>
 
             {/* Headline */}
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight max-w-4xl leading-[1.08]">
-              Embed social publishing{" "}
-              <span className="relative whitespace-nowrap">
-                <span className="relative z-10 text-primary">in 5 minutes</span>
-                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none" aria-hidden="true">
-                  <path d="M2 9C80 1 220 1 298 9" stroke="#2ea44f" strokeWidth="3" strokeLinecap="round" opacity="0.4"/>
-                </svg>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[88px] font-extrabold tracking-[-0.04em] leading-[0.92] text-white max-w-4xl mb-7">
+              Add social publishing
+              <br />
+              to your SaaS{" "}
+              <span className="bg-gradient-to-r from-green-400 via-emerald-300 to-green-500 bg-clip-text text-transparent">
+                in one afternoon
               </span>
             </h1>
 
-            <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-              Drop a widget into your platform. Your branding, your OAuth, your domain.
-              Let your users publish to Social — without ever leaving your app.
+            {/* Subhead */}
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl leading-relaxed mb-10">
+              Drop-in React widget for Instagram, TikTok, LinkedIn, X, Facebook, and YouTube.
+              Your brand. Your OAuth apps. Zero Palactix branding.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-              <Button
-                size="lg"
-                className="h-13 px-8 bg-primary hover:bg-primary/90 text-white rounded-full text-base font-semibold shadow-lg shadow-primary/25"
-                asChild
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
+              <Link
+                href="https://www.npmjs.com/package/@palactix/publisher-widget"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 h-12 px-7 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl text-base shadow-lg shadow-green-500/25 transition-all duration-200"
               >
-                <Link href="/developer/signup">
-                  Get API Key Free <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-13 px-8 rounded-full text-base"
+                Install npm package <ArrowRight className="w-4 h-4" />
+              </Link>
+              <button
+                onClick={() => setDemoOpen(true)}
+                className="inline-flex items-center gap-2 h-12 px-7 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl text-base border border-white/20 transition-all duration-200"
               >
-                View Demo
-              </Button>
-              <Button
-                size="lg"
-                variant="ghost"
-                className="h-13 px-6 rounded-full text-base text-muted-foreground hover:text-foreground gap-2"
-                asChild
+                See live demo
+              </button>
+              <Link
+                href="/contact-us"
+                className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-base font-medium transition-colors duration-200"
               >
-                <Link href="/docs/publisher-widget">
-                  <BookOpen className="w-4 h-4" /> Read the docs
-                </Link>
-              </Button>
+                Talk to founder <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
 
-            <p className="text-xs text-muted-foreground tracking-widest uppercase">
-              Trusted by sports platforms, learning apps, SaaS tools &amp; media companies
+            {/* Platform pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mb-10">
+              {PLATFORMS.map((p) => (
+                <span
+                  key={p.name}
+                  className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3.5 py-1.5"
+                >
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
+                  <span className="text-sm text-gray-300">{p.name}</span>
+                </span>
+              ))}
+            </div>
+
+            <p className="text-xs text-gray-600 tracking-widest uppercase">
+              Live in production · Sports &amp; wellness · Real estate · Franchise management
             </p>
-
-            {/* Hero widget mockup */}
-            <div className="relative mt-8 w-full max-w-3xl">
-              <div className="absolute inset-0 bg-primary/5 rounded-3xl blur-2xl" />
-              <div className="relative rounded-2xl border border-border/60 bg-background/60 backdrop-blur-sm shadow-2xl overflow-hidden">
-                {/* Fake browser bar */}
-                <div className="flex items-center gap-2 px-5 h-10 border-b border-border/60 bg-muted/30">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-                  <div className="mx-auto flex items-center gap-2 bg-background/50 border border-border/60 rounded-md px-3 py-1 text-xs text-muted-foreground w-64">
-                    <Lock className="w-3 h-3" /> yourdomain.com/app
-                  </div>
-                </div>
-                {/* Mock content */}
-                <div className="relative flex items-center justify-center p-10 gap-10">
-                  <div className="hidden md:flex flex-col gap-3 flex-1 opacity-30">
-                    <div className="h-8 w-3/4 bg-muted rounded-lg" />
-                    <div className="h-4 w-full bg-muted rounded" />
-                    <div className="h-4 w-5/6 bg-muted rounded" />
-                    <div className="h-32 w-full bg-muted rounded-lg mt-2" />
-                  </div>
-                  {/* Widget popup */}
-                  <div className="w-72 shrink-0 rounded-xl border border-border bg-background shadow-2xl flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between px-4 h-12 border-b border-border">
-                      <span className="text-sm font-semibold">Publish to Social</span>
-                      <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">×</div>
-                    </div>
-                    <div className="p-4 space-y-3">
-                      <div className="h-20 bg-muted/50 rounded-lg border border-border/50 flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground">Write your caption…</span>
-                      </div>
-                      <div className="flex gap-2">
-                        {["IG", "X", "TK", "LI"].map(p => (
-                          <div key={p} className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">{p}</div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="p-4 pt-0">
-                      <div className="w-full h-10 bg-primary rounded-lg flex items-center justify-center text-white text-sm font-semibold">
-                        Publish Now
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </Container>
       </section>
 
-      {/* ══════════════════════════════════════
-          2. STATS BAR
-      ══════════════════════════════════════ */}
-      <section className="border-y border-border bg-muted/30 py-6">
+      {/* ────────────────────────────────────────
+          2 · METRICS BAR  (dark)
+      ──────────────────────────────────────── */}
+      <section className="bg-gray-900 border-y border-gray-800">
         <Container>
-          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4">
+          <div className="flex flex-wrap justify-center gap-x-14 gap-y-5 py-8">
             {[
-              ["100", "free posts / month"],
-              ["5 min", "to integrate"],
-              ["6", "social platforms"],
-              ["1", "npm install"],
-            ].map(([num, label]) => (
-              <div key={label} className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-foreground">{num}</span>
-                <span className="text-sm text-muted-foreground">{label}</span>
+              { value: "6",     label: "Social platforms" },
+              { value: "1 hr",  label: "Avg. setup time" },
+              { value: "$99",   label: "Per month flat" },
+              { value: "0",     label: "Palactix branding" },
+            ].map(({ value, label }) => (
+              <div key={label} className="text-center">
+                <div className="text-3xl font-black text-white tracking-tight">{value}</div>
+                <div className="text-xs text-gray-500 mt-1 uppercase tracking-widest">{label}</div>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* ══════════════════════════════════════
-          3. PROBLEM / SOLUTION
-      ══════════════════════════════════════ */}
-      <section className="py-28">
+      {/* ────────────────────────────────────────
+          3 · PROBLEM  (light, pain grid)
+      ──────────────────────────────────────── */}
+      <section className="bg-white py-32">
         <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              Stop building what you shouldn&apos;t have to
+          <div className="max-w-3xl mb-16">
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">
+              The reality
+            </p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-5 leading-[1.05]">
+              We handle the engineering.<br />
+              You handle app approvals.
             </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Social publishing infrastructure is a 6-month detour. We cut it to a day.
+            <p className="text-xl text-gray-500 leading-relaxed">
+              Here's exactly what you're signing up for with each approach.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 rounded-3xl overflow-hidden border border-border shadow-sm">
-            <div className="p-10 md:p-14 space-y-5">
-              <p className="text-xs text-destructive font-semibold tracking-widest uppercase mb-8">The hard way</p>
-              {[
-                ["Integrate 6 different platform APIs", "Weeks per platform"],
-                ["Build OAuth connection flows", "Complex, error-prone"],
-                ["Design publishing UI from scratch", "Weeks of design + dev"],
-                ["Handle rate limits and quotas", "Platform-specific nightmares"],
-                ["Manage API failures and retries", "24/7 on-call"],
-                ["6–12 months of development", "Before you ship one feature"],
-              ].map(([item, sub], i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-destructive/70 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">{item}</p>
-                    <p className="text-xs text-muted-foreground/60">{sub}</p>
-                  </div>
+          {/* Two-column comparison */}
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+            
+            {/* LEFT: Building from scratch */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                  <XIcon className="w-4 h-4 text-red-600" />
                 </div>
-              ))}
-            </div>
-
-            <div className="p-10 md:p-14 bg-primary/5 border-t md:border-t-0 md:border-l border-border space-y-5">
-              <p className="text-xs text-primary font-semibold tracking-widest uppercase mb-8">With Palactix Widget</p>
-              {[
-                ["One npm install", "One command, all platforms"],
-                ["We handle all OAuth", "Zero auth code to write"],
-                ["Pre-built, branded UI", "Customise via config"],
-                ["We manage rate limits", "Automatic throttling"],
-                ["Built-in retry & failover", "We page you, not you us"],
-                ["Ship in 1 day", "Seriously."],
-              ].map(([item, sub], i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{item}</p>
-                    <p className="text-xs text-muted-foreground">{sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ══════════════════════════════════════
-          4. HOW IT WORKS  (connected steps)
-      ══════════════════════════════════════ */}
-      <section className="py-28 bg-muted/20 border-y border-border">
-        <Container>
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">How it works</h2>
-            <p className="text-muted-foreground text-lg">React, Vue, HTML, Angular — any stack, same 4 steps.</p>
-          </div>
-
-          <div ref={stepsRef} className="relative max-w-3xl mx-auto">
-            {/* Vertical connector line */}
-            <div className="absolute left-1/2 -translate-x-px top-8 bottom-8 w-px bg-border hidden md:block" />
-
-            {[
-              {
-                icon: Package,
-                step: "01",
-                title: "Install the package",
-                desc: "One command. Zero peer dependencies.",
-                code: "npm install @palactix/publisher-widget",
-              },
-              {
-                icon: Terminal,
-                step: "02",
-                title: "Initialise with your token",
-                desc: "Grab your widget token from the dashboard.",
-                code: "const widget = new Palactix({ token: [SESSION_TOKEN] });",
-              },
-              {
-                icon: MousePointerClick,
-                step: "03",
-                title: "Add a button",
-                desc: "Call publish() anywhere in your app.",
-                code: "widget.publish({ content: 'Hello World!' });",
-              },
-              {
-                icon: Send,
-                step: "04",
-                title: "Your users publish",
-                desc: "Widget popup opens inside your app. OAuth included.",
-                code: "// Instagram, X, TikTok, LinkedIn — done.",
-              },
-            ].map((s, i) => (
-              <div
-                key={i}
-                style={{ transitionDelay: `${i * 150}ms` }}
-                className={`relative md:flex gap-12 mb-14 last:mb-0 transition-all duration-700 ${
-                  stepsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                } ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
-              >
-                {/* Step badge */}
-                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-0 z-10 w-11 h-11 rounded-full bg-background border-2 border-primary items-center justify-center text-xs font-black text-primary shadow-sm">
-                  {s.step}
-                </div>
-
-                {/* Card */}
-                <div className={`md:w-[calc(50%-3rem)] ${i % 2 === 0 ? "md:ml-0 md:mr-auto" : "md:ml-auto md:mr-0"}`}>
-                  <div className="bg-background border border-border rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <s.icon className="w-4 h-4 text-primary" />
-                      </div>
-                      <h3 className="font-semibold text-base">{s.title}</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">{s.desc}</p>
-                    <div className="bg-[#0d1117] rounded-lg px-4 py-3">
-                      <code className="text-xs text-[#7ee787] font-mono">{s.code}</code>
-                    </div>
-                  </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-lg">Building from scratch</h3>
+                  <p className="text-sm text-gray-500">6–12 months + ongoing maintenance</p>
                 </div>
               </div>
-            ))}
-          </div>
-        </Container>
-      </section>
 
-      {/* ══════════════════════════════════════
-          5. LIVE CODE EXAMPLE
-      ══════════════════════════════════════ */}
-      <section className="py-28">
-        <Container>
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold text-primary tracking-widest uppercase border border-primary/30 bg-primary/5 px-3 py-1.5 rounded-full">
-                <Terminal className="w-3.5 h-3.5" /> Live Code
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Copy. Paste. Ship.
-              </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                No lengthy API docs. No OAuth walkthroughs. Just working code — pick your framework.
-              </p>
-
-              <div className="flex flex-wrap gap-2 pt-2">
-                {Object.keys(snippets).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setTab(t)}
-                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all border ${
-                      tab === t
-                        ? "bg-primary border-primary text-white shadow-md shadow-primary/20"
-                        : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                    }`}
+              <div className="space-y-2">
+                {PAIN_WITHOUT.map(({ label, badge }) => (
+                  <div
+                    key={label}
+                    className="flex items-start justify-between gap-3 p-4 bg-red-50 border border-red-100 rounded-xl"
                   >
-                    {t}
-                  </button>
+                    <span className="text-sm font-medium text-gray-800 leading-snug">
+                      {label}
+                    </span>
+                    <span className="text-[11px] font-semibold text-red-600 bg-red-100 rounded-full px-2.5 py-1 shrink-0 whitespace-nowrap">
+                      {badge}
+                    </span>
+                  </div>
                 ))}
               </div>
 
-              <ul className="space-y-3 pt-2">
+              {/* Plus BYOK requirements */}
+              <div className="pt-4 border-t border-gray-200">
+                <p className="text-sm font-semibold text-gray-700 mb-2">Plus platform approvals:</p>
+                <div className="space-y-1.5 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Minus className="w-3 h-3 text-red-400 shrink-0" />
+                    <span>Meta App Review (~2 weeks)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Minus className="w-3 h-3 text-red-400 shrink-0" />
+                    <span>TikTok API audit (~1 week)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Minus className="w-3 h-3 text-red-400 shrink-0" />
+                    <span>X API account ($200–5k/mo)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: With Palactix */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-lg">With Palactix Widget</h3>
+                  <p className="text-sm text-green-600 font-semibold">2 hours + 2–4 weeks approval</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {PAIN_WITH.map(({ label, status }) => (
+                  <div
+                    key={label}
+                    className="flex items-start justify-between gap-3 p-4 bg-primary/5 border border-green-100 rounded-xl"
+                  >
+                    <span className="text-sm font-medium text-gray-800 leading-snug">
+                      {label}
+                    </span>
+                    <span className="text-[11px] font-semibold text-green-700 bg-primary/10 rounded-full px-2.5 py-1 shrink-0 whitespace-nowrap">
+                      {status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Your BYOK requirements */}
+              <div className="pt-4 border-t border-gray-200">
+                <p className="text-sm font-semibold text-gray-700 mb-2">You handle (one-time):</p>
+                <div className="space-y-1.5 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>Meta App Review (~2 weeks, <a href="#" className="text-primary hover:underline">we guide</a>)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>TikTok API audit (~1 week, <a href="#" className="text-primary hover:underline">we guide</a>)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>X API account (15 min, from $200/mo)</span>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+                  <strong>Why BYOK?</strong> Your users see YOUR brand on OAuth screens, not ours. You own the connections.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom CTA bar */}
+          <div className="bg-gray-950 text-white rounded-2xl px-8 py-7 text-center">
+            <p className="text-2xl font-black text-green-400 mb-2">
+              Your engineering time: 2 hours vs 6 months
+            </p>
+            <p className="text-gray-400 text-sm">
+              Platform approvals are the same either way. But the engineering work? We've got it.
+            </p>
+          </div>
+        </Container>
+      </section>
+
+      {/* ────────────────────────────────────────
+          4 · CODE SHOWCASE  (dark, interactive)
+      ──────────────────────────────────────── */}
+      <section className="relative bg-gray-950 py-32 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(white 1px,transparent 1px),linear-gradient(90deg,white 1px,transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+        <Container className="relative z-10">
+          <div className="text-center mb-16">
+            <p className="text-xs font-semibold text-green-400 tracking-widest uppercase mb-4">Integration</p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-white mb-4 leading-[1.05]">
+              Three steps. One afternoon.
+            </h2>
+            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+              From npm install to your users publishing live.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-5 gap-5 max-w-5xl mx-auto">
+            {/* Step selector */}
+            <div className="lg:col-span-2 flex flex-col justify-center gap-1.5">
+              {STEPS.map((step, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveStep(i)}
+                  className={`w-full text-left px-5 py-4 rounded-xl transition-all duration-200 ${
+                    activeStep === i
+                      ? "bg-white/8 border border-white/15"
+                      : "border border-transparent hover:bg-white/4"
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <span
+                      className={`text-xs font-black mt-0.5 shrink-0 transition-colors tabular-nums ${
+                        activeStep === i ? "text-green-400" : "text-gray-600"
+                      }`}
+                    >
+                      {step.n}
+                    </span>
+                    <div>
+                      <p className={`font-semibold text-sm transition-colors ${activeStep === i ? "text-white" : "text-gray-500"}`}>
+                        {step.title}
+                      </p>
+                      <p className="text-xs text-gray-600 mt-0.5">{step.desc}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+
+              <div className="px-5 pt-4">
+                <Link
+                  href="/docs/publisher-widget"
+                  className="inline-flex items-center gap-1.5 text-green-400 hover:text-green-300 text-sm font-medium transition-colors"
+                >
+                  Read full documentation <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Code panel */}
+            <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-gray-800 bg-[#0d1117]">
+              <div className="flex items-center justify-between px-5 h-11 border-b border-gray-800">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-primary/70" />
+                  <span className="ml-3 text-xs text-gray-500 font-mono">
+                    {STEPS[activeStep].file}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-700 font-mono">
+                  {activeStep + 1} / {STEPS.length}
+                </span>
+              </div>
+              <CodeBlock code={STEPS[activeStep].code} />
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ────────────────────────────────────────
+          5 · FEATURES BENTO  (light)
+      ──────────────────────────────────────── */}
+      <section className="bg-[#fafafa] py-32">
+        <Container>
+          <div className="text-center mb-16">
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">What&apos;s included</p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-4 leading-[1.05]">
+              Everything included
+            </h2>
+            <p className="text-xl text-gray-500">No add-ons. No surprises.</p>
+          </div>
+
+          <div
+            ref={featuresRef}
+            className={`grid grid-cols-1 md:grid-cols-3 gap-4 transition-all duration-700 ${
+              featuresVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            {/* Platform coverage — wide card */}
+            <div className="md:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+              <h3 className="font-bold text-xl text-gray-900 mb-1">6 platforms, one widget</h3>
+              <p className="text-gray-500 text-sm mb-6">Every major social platform, covered out of the box.</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {PLATFORMS.map((p) => (
+                  <div
+                    key={p.name}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100"
+                  >
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[10px] font-black shrink-0"
+                      style={{ background: p.color }}
+                    >
+                      {p.abbr}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                      <p className="text-[10px] text-gray-400 truncate">{p.types}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* White-label — narrow, with mock auth screen */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 p-8">
+              <h3 className="font-bold text-xl text-gray-900 mb-1">Zero Palactix branding</h3>
+              <p className="text-gray-500 text-sm mb-5">Your users only ever see your company name.</p>
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 rounded bg-primary/15 flex items-center justify-center">
+                    <span className="text-[8px] font-black text-green-700">YA</span>
+                  </div>
+                  <span className="text-sm font-bold text-gray-900">YourApp</span>
+                </div>
+                <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                  <strong className="text-gray-800">YourApp</strong> is requesting access to your Instagram account.
+                </p>
+                <div className="space-y-1.5 mb-4">
+                  {["Read your profile", "Post content", "Manage media"].map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
+                      <Check className="w-3 h-3 text-green-500 shrink-0" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+                <div className="w-full bg-primary text-white text-xs font-bold text-center py-2 rounded-lg">
+                  Authorize YourApp
+                </div>
+              </div>
+            </div>
+
+            {/* BYOK */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                <Key className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Bring Your Own Keys</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                You create the OAuth apps. Your users authorize through your brand. You own every token and connection — forever.
+              </p>
+            </div>
+
+            {/* Scheduling */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                <CalendarDays className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Scheduling built-in</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Publish now or schedule for any future date. Queue management, auto-retry, and webhook notifications included.
+              </p>
+            </div>
+
+            {/* Dev experience */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                <Zap className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">Built for developers</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                React, Vue, vanilla JS. Full TypeScript definitions. Webhook events. Works inside any component tree with zero friction.
+              </p>
+            </div>
+
+            {/* Full-width CTA card */}
+            <div className="md:col-span-3 bg-gray-950 rounded-2xl p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <div>
+                <p className="text-xl font-bold text-white mb-1">One afternoon. Full social publishing.</p>
+                <p className="text-gray-400 text-sm">
+                  If it takes longer, email us. We&apos;ll pair with you live.
+                </p>
+              </div>
+              <Link
+                href="/developer/signup"
+                className="inline-flex items-center gap-2 h-11 px-6 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl shrink-0 shadow-lg shadow-green-500/25 transition-all duration-200"
+              >
+                Start 14-day trial <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ────────────────────────────────────────
+          6 · USE CASES  (white)
+      ──────────────────────────────────────── */}
+      <section className="bg-white py-32 border-t border-gray-100">
+        <Container>
+          <div className="text-center mb-16">
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">Use cases</p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-4 leading-[1.05]">
+              Built for vertical SaaS
+            </h2>
+            <p className="text-xl text-gray-500">
+              If your users create content, they should be able to publish it.
+            </p>
+          </div>
+
+          <div
+            ref={useCasesRef}
+            className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-all duration-700 ${
+              useCasesVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            {USE_CASES.map((u, i) => (
+              <div
+                key={i}
+                style={{ transitionDelay: `${i * 60}ms` }}
+                className="p-7 bg-gray-50 border border-gray-100 rounded-2xl hover:bg-white hover:border-gray-200 hover:shadow-md transition-all duration-200"
+              >
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                  <u.icon className="w-5 h-5 text-primary" />
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">{u.title}</h4>
+                <p className="text-sm text-gray-500 leading-relaxed">{u.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ────────────────────────────────────────
+          7 · PRICING  (off-white)
+      ──────────────────────────────────────── */}
+      <section className="bg-[#fafafa] py-32 border-t border-gray-100">
+        <Container>
+          <div className="text-center mb-14">
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">Pricing</p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-4 leading-[1.05]">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-xl text-gray-500">
+              One plan. Everything included. No per-user or per-platform fees.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-2xl border-2 border-green-300 shadow-lg overflow-hidden">
+              {/* Top: price left, features right */}
+              <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                {/* Left: price + trial badge */}
+                <div className="p-10">
+                  <div className="flex items-end gap-1.5 mb-2">
+                    <span className="text-6xl font-black text-gray-900 tracking-tight">$99</span>
+                    <span className="text-xl text-gray-400 mb-2">/month</span>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-6">
+                    + <strong className="text-gray-800">$0.01 per post</strong> after 100 posts
+                  </p>
+                  <span className="inline-flex items-center gap-2 bg-primary/5 border border-green-200 text-green-700 text-sm font-semibold rounded-full px-4 py-2">
+                    14-day free trial — no credit card
+                  </span>
+                </div>
+
+                {/* Right: feature list */}
+                <div className="p-10">
+                  <ul className="space-y-3">
+                    {[
+                      "Unlimited end users",
+                      "100 posts/month included",
+                      "All 6 platforms enabled",
+                      "Full white-label (BYOK)",
+                      "React, Vue, vanilla JS support",
+                      "Webhook notifications",
+                      "Priority email support",
+                      "No setup fees",
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-3 text-sm text-gray-700">
+                        <Check className="w-4 h-4 text-green-500 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Bottom: fine print + CTAs */}
+              <div className="border-t border-gray-100 bg-gray-50/60 px-10 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+                <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
+                  100 posts = 100 publish actions. One post to 5 platforms = 5 posts.
+                  No per-user fees. No per-platform fees. Cancel anytime.
+                </p>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    href="/developer/signup"
+                    className="inline-flex items-center h-11 px-6 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl text-sm shadow-md shadow-green-500/20 transition-all duration-200"
+                  >
+                    Start 14-day trial
+                  </Link>
+                  <Link
+                    href="/contact-us"
+                    className="inline-flex items-center h-11 px-6 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl text-sm border border-gray-200 transition-all duration-200"
+                  >
+                    Talk to founder
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ────────────────────────────────────────
+          8 · BYOK  (white, comparison table)
+      ──────────────────────────────────────── */}
+      <section className="bg-white py-32 border-t border-gray-100">
+        <Container>
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            {/* Left: text */}
+            <div>
+              <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">
+                White-label infrastructure
+              </p>
+              <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-5 leading-[1.05]">
+                Your OAuth apps.<br />Your brand.<br />Your control.
+              </h2>
+              <p className="text-lg text-gray-500 leading-relaxed mb-8">
+                Most social tools connect your users through <em>their</em> platform apps — users see
+                {" "}<em>&ldquo;Buffer is requesting access.&rdquo;</em> With Palactix, they see{" "}
+                <strong className="text-gray-800">your company name</strong>. You create the OAuth apps.
+                We handle the infrastructure. You own the relationship.
+              </p>
+              <Link
+                href="/docs/getting-started/configure-platform-credentials"
+                className="inline-flex items-center gap-2 text-green-600 hover:text-green-500 font-semibold transition-colors"
+              >
+                How to set up BYOK <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Right: comparison table */}
+            <div className="rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-200">
+                <div className="px-5 py-4 text-sm font-semibold text-gray-400" />
+                <div className="px-5 py-4 text-sm font-semibold text-gray-500 text-center border-l border-gray-200">
+                  Other tools
+                </div>
+                <div className="px-5 py-4 text-sm font-semibold text-green-600 text-center border-l border-gray-200">
+                  Palactix Widget
+                </div>
+              </div>
+              {[
+                ["OAuth screens",    "Their brand",       "Your brand"],
+                ["API credentials",  "Their apps",        "Your apps"],
+                ["When you leave",   "Re-auth all users", "Keep all connections"],
+                ["Rate limits",      "Shared pool",       "Your own limits"],
+                ["Platform bans",    "Everyone affected", "Only you affected"],
+                ["White-label cost", "$500–1,000/mo",     "Included at $99/mo"],
+              ].map(([label, other, ours], i) => (
+                <div
+                  key={i}
+                  className={`grid grid-cols-3 border-b border-gray-100 last:border-b-0 ${
+                    i % 2 === 1 ? "bg-gray-50/60" : "bg-white"
+                  }`}
+                >
+                  <div className="px-5 py-4 text-sm font-medium text-gray-700">{label}</div>
+                  <div className="px-5 py-4 text-sm text-center text-gray-400 border-l border-gray-100">{other}</div>
+                  <div className="px-5 py-4 text-sm text-center font-semibold text-green-600 border-l border-gray-100">{ours}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ────────────────────────────────────────
+          9 · DO / DON'T  (off-white)
+      ──────────────────────────────────────── */}
+      <section className="bg-[#fafafa] py-32 border-t border-gray-100">
+        <Container>
+          <div className="text-center mb-14">
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">Scope</p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-4 leading-[1.05]">
+              What we do &amp; don&apos;t do
+            </h2>
+            <p className="text-xl text-gray-500 max-w-xl mx-auto">
+              We do ONE thing well: embed social publishing. No feature bloat.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+              <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-6">We do</p>
+              <ul className="space-y-3">
                 {[
-                  "Works inside any component tree",
-                  "Fully white-labelled — your brand only",
-                  "OAuth handled by the widget itself",
+                  "Embeddable publishing UI",
+                  "OAuth flows for all platforms",
+                  "Automatic token refresh",
+                  "Queue & retry failed posts",
+                  "BYOK (your OAuth apps)",
+                  "White-label everything",
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-primary shrink-0" />
+                  <li key={item} className="flex items-center gap-3 text-sm text-gray-700">
+                    <span className="w-5 h-5 bg-primary/5 border border-green-200 rounded-full flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 text-green-600" />
+                    </span>
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Code block */}
-            <div className="rounded-2xl overflow-hidden border border-border shadow-2xl bg-[#0d1117]">
-              <div className="flex items-center justify-between px-5 h-12 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/70" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/70" />
-                  <span className="ml-3 text-xs text-white/30 font-mono">
-                    {tab === "React" ? "MediaCard.tsx" : tab === "HTML" ? "index.html" : "App.vue"}
-                  </span>
-                </div>
-                <button
-                  onClick={copy}
-                  className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/80 transition-colors"
-                >
-                  {copied ? (
-                    <><Check className="w-3.5 h-3.5 text-green-400" /><span className="text-green-400">Copied!</span></>
-                  ) : (
-                    <><Copy className="w-3.5 h-3.5" />Copy</>
-                  )}
-                </button>
-              </div>
-              <Code code={snippets[tab]} />
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+              <p className="text-xs font-semibold text-gray-400 tracking-widest uppercase mb-6">We don&apos;t</p>
+              <ul className="space-y-3">
+                {[
+                  ["AI content generation",    "bring your own"],
+                  ["Social listening",         ""],
+                  ["Influencer discovery",     ""],
+                  ["Engagement analytics",     "coming Q3 2026"],
+                  ["Comment management",       "coming Q4 2026"],
+                ].map(([item, note]) => (
+                  <li key={item} className="flex items-center gap-3 text-sm text-gray-400">
+                    <span className="w-5 h-5 bg-gray-50 border border-gray-200 rounded-full flex items-center justify-center shrink-0">
+                      <XIcon className="w-3 h-3 text-gray-300" />
+                    </span>
+                    <span>
+                      {item}
+                      {note && <span className="text-xs text-gray-300 ml-1.5">({note})</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* ══════════════════════════════════════
-          6. FEATURES  (bento grid)
-      ══════════════════════════════════════ */}
-      <section className="py-28 bg-muted/20 border-y border-border">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Everything included</h2>
-            <p className="text-muted-foreground text-lg">No add-ons. No surprises.</p>
-          </div>
-
-          <div
-            ref={featRef}
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-700 ${
-              featVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            {/* Large feature card */}
-            <div className="lg:col-span-2 bg-background border border-border rounded-3xl p-8 group hover:border-primary/40 hover:shadow-lg transition-all">
-              <div className="flex items-start gap-6">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Paintbrush className="w-7 h-7 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Fully white-label</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    OAuth consent screens, widget title, button labels — all show your company name. Your users never see &quot;Palactix&quot; anywhere. Configure logo, colors, and copy via a single config object.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Small card */}
-            <div className="bg-background border border-border rounded-3xl p-8 group hover:border-primary/40 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
-                <Lock className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="font-bold text-lg mb-1">BYO OAuth</h3>
-              <p className="text-sm text-muted-foreground">Your API keys. You own every token. We never touch your credentials.</p>
-            </div>
-
-            {(["Instant publishing", "All major platforms", "Retry & failover", "Scheduling built-in", "Analytics ready", "Multi-account support"] as const).map((title, i) => {
-              const icons = [Zap, Smartphone, RefreshCw, Clock, BarChart3, Globe];
-              const descs = [
-                "No redirects. A popup keeps users inside your app the whole time.",
-                "Instagram, X, TikTok, LinkedIn, Facebook, YouTube — out of the box.",
-                "We catch failed posts and automatically retry with exponential back-off.",
-                "Let users publish now or schedule posts for any future date and time.",
-                "Track every published post and engagement signal via our REST API.",
-                "Users can connect and switch between multiple social profiles with ease.",
-              ];
-              const Icon = icons[i];
-              return (
-                <div key={title} className="bg-background border border-border rounded-3xl p-7 group hover:border-primary/40 hover:shadow-lg transition-all">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-base mb-1">{title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{descs[i]}</p>
-                </div>
-              );
-            })}
-
-            {/* 5-min setup wide card */}
-            <div className="lg:col-span-2 bg-primary/5 border border-primary/20 rounded-3xl p-8 group hover:border-primary/40 hover:shadow-lg transition-all">
-              <div className="flex items-start gap-6">
-                <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center shrink-0">
-                  <Wrench className="w-7 h-7 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">5-minute setup. Seriously.</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    One npm install, one init call, one button. If it takes longer than 5 minutes, email us and we&apos;ll debug it live with you.
-                  </p>
-                  <Button
-                    className="mt-5 bg-primary hover:bg-primary/90 text-white rounded-full"
-                    size="sm"
-                    asChild
-                  >
-                    <Link href="/developer/signup">Start building free <ArrowRight className="w-3.5 h-3.5 ml-1" /></Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ══════════════════════════════════════
-          7. PRICING
-      ══════════════════════════════════════ */}
-      <section className="py-28">
-        <Container>
-          <div className="max-w-md mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="text-4xl font-bold tracking-tight mb-3">Simple pricing</h2>
-              <p className="text-muted-foreground">Start free. Pay only when your users publish at scale.</p>
-            </div>
-
-            <div className="relative rounded-3xl border border-primary/30 bg-background overflow-hidden shadow-xl shadow-primary/5">
-              <div className="absolute top-0 inset-x-0 h-0.5 bg-linear-to-r from-transparent via-primary to-transparent" />
-              <div className="p-10 text-center">
-                <p className="text-sm text-muted-foreground mb-2">Widget + API Access</p>
-                <div className="flex items-end justify-center gap-1 my-5">
-                  <span className="text-7xl font-black tracking-tight">$0.01</span>
-                  <span className="text-xl text-muted-foreground mb-3">/post</span>
-                </div>
-                <div className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 text-sm font-semibold px-4 py-2 rounded-full mb-8">
-                  <Check className="w-4 h-4" /> 100 posts/month completely free
-                </div>
-                <Button className="w-full h-13 rounded-2xl bg-primary hover:bg-primary/90 text-white text-base font-semibold" asChild>
-                  <Link href="/developer/signup">Start Building — No Card Required</Link>
-                </Button>
-                <p className="text-xs text-muted-foreground mt-4">No monthly fees until you exceed 100 posts.</p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ══════════════════════════════════════
-          8. WHO USES THIS
-      ══════════════════════════════════════ */}
-      <section className="py-28 bg-muted/20 border-y border-border">
-        <Container>
-          <div className="text-center mb-14">
-            <h2 className="text-4xl font-bold tracking-tight mb-3">Built for platforms that manage content</h2>
-            <p className="text-muted-foreground text-lg">If your users create content, they should be able to publish it.</p>
-          </div>
-
-          <div
-            ref={whoRef}
-            className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-all duration-700 ${
-              whoVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-            }`}
-          >
-            {[
-              { icon: Dumbbell, title: "Sports platforms", desc: "Publish athlete highlights, match reports, and training content to social media directly." },
-              { icon: BookOpen, title: "Learning platforms", desc: "Let students and instructors share course highlights and milestones to their networks." },
-              { icon: Newspaper, title: "Media platforms", desc: "Push articles, videos, and breaking news to social channels without leaving your CMS." },
-              { icon: LayoutGrid, title: "SaaS tools", desc: "Add social sharing as a native feature inside your existing product workflow." },
-            ].map((u, i) => (
-              <div
-                key={i}
-                className="bg-background border border-border rounded-2xl p-7 hover:-translate-y-1 hover:shadow-md hover:border-primary/30 transition-all"
-              >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
-                  <u.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h4 className="font-semibold text-base mb-2">{u.title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{u.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* ══════════════════════════════════════
-          9. FAQ
-      ══════════════════════════════════════ */}
-      <section className="py-28">
+      {/* ────────────────────────────────────────
+          10 · FAQ  (white)
+      ──────────────────────────────────────── */}
+      <FAQs faqs={FAQS} />
+      {/* <section className="bg-white py-32 border-t border-gray-100">
         <Container className="max-w-3xl">
           <div className="text-center mb-14">
-            <h2 className="text-4xl font-bold tracking-tight mb-3">Frequently asked questions</h2>
-            <p className="text-muted-foreground">Everything you need before writing a single line of code.</p>
+            <p className="text-xs font-semibold text-green-600 tracking-widest uppercase mb-4">FAQ</p>
+            <h2 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-4 leading-[1.05]">
+              Frequently asked questions
+            </h2>
+            <p className="text-xl text-gray-500">
+              Everything you need before writing a single line of code.
+            </p>
           </div>
 
-          <Accordion type="single" collapsible className="space-y-3">
-            {[
-              {
-                q: "What is Palactix?",
-                a: "Palactix is white-label social media infrastructure for developers — REST APIs and embeddable widgets. BYO OAuth means you keep every credential, token, and consent screen under your brand.",
-              },
-              {
-                q: "What's the difference between the Widget and the Scheduler?",
-                a: "Widget = npm package you embed in your existing product. Scheduler = a full white-label dashboard app (separate product, separate pricing).",
-              },
-              {
-                q: "Does the widget show Palactix branding?",
-                a: "Never. The widget is completely white-label. Configure your logo, name, and colors — your users only ever see your brand.",
-              },
-              {
-                q: "Do I need to build OAuth connection flows?",
-                a: "No. The widget handles the entire OAuth lifecycle. You provide your app credentials in the dashboard; we do the rest.",
-              },
-              {
-                q: "Which platforms are currently supported?",
-                a: "Instagram, Facebook, X (Twitter), TikTok, LinkedIn, and YouTube. More platforms are on the roadmap.",
-              },
-              {
-                q: "Can I customise the widget's appearance?",
-                a: "Yes — theme color, logo, button labels, and font are all configurable via the widget init options. No CSS overrides needed.",
-              },
-            ].map((faq, i) => (
+          <Accordion type="single" collapsible className="space-y-2">
+            {FAQS.map((faq, i) => (
               <AccordionItem
                 key={i}
                 value={`faq-${i}`}
-                className="bg-background border border-border rounded-2xl px-6 data-[state=open]:border-primary/40 transition-colors"
+                className="border border-gray-100 rounded-2xl px-6 shadow-sm data-[state=open]:border-green-200 transition-colors bg-white"
               >
-                <AccordionTrigger className="text-left hover:no-underline py-5 data-[state=open]:text-primary">
-                  <span className="font-semibold">{faq.q}</span>
+                <AccordionTrigger className="text-left hover:no-underline py-5 data-[state=open]:text-green-700 text-gray-900 font-semibold text-base">
+                  {faq.q}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed pb-5">
+                <AccordionContent className="text-gray-500 leading-relaxed pb-5 text-base">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-        </Container>
-      </section>
 
-      {/* ══════════════════════════════════════
-          10. FOOTER CTA
-      ══════════════════════════════════════ */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent to-primary/5" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-175 h-100 rounded-full bg-primary/8 blur-[100px]" />
-        <Container className="relative max-w-3xl text-center">
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.05]">
-            Ready to ship social publishing?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-10">
-            No credit card. No OAuth headaches. Just working code for your users.
-          </p>
-          <Button
-            size="lg"
-            className="h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-full text-base font-semibold shadow-xl shadow-primary/25"
-            asChild
-          >
-            <Link href="/developer/signup">
-              Get API Key — Free Trial <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
-          </Button>
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <p className="text-sm text-muted-foreground tracking-widest uppercase">
-              No credit card &bull; 100 posts/month Free &bull; 5-minute setup
-            </p>
-            <span className="hidden sm:block text-muted-foreground/40">|</span>
+          <div className="text-center mt-12">
             <Link
-              href="/docs/publisher-widget"
-              className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium"
+              href="/contact-us"
+              className="inline-flex items-center gap-2 text-green-600 hover:text-green-500 font-semibold transition-colors"
             >
-              <BookOpen className="w-3.5 h-3.5" /> Read the docs
+              More questions? Talk to the founder <ArrowRight className="w-4 h-4" />
             </Link>
+          </div>
+        </Container>
+      </section> */}
+
+      {/* ────────────────────────────────────────
+          11 · FINAL CTA  (dark, gradient)
+      ──────────────────────────────────────── */}
+      <section className="relative bg-gray-950 py-36 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(white 1px,transparent 1px),linear-gradient(90deg,white 1px,transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse,#2ea44f,transparent 65%)" }}
+        />
+
+        <Container className="relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-[-0.04em] text-white mb-6 leading-[0.92]">
+              Ready to ship<br />
+              <span className="bg-gradient-to-r from-green-400 via-emerald-300 to-green-500 bg-clip-text text-transparent">
+                social publishing?
+              </span>
+            </h2>
+            <p className="text-xl text-gray-400 mb-12 leading-relaxed">
+              Install the widget this afternoon. Your users posting by tomorrow.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+              <Link
+                href="/developer/signup"
+                className="inline-flex items-center gap-2 h-14 px-10 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-base shadow-xl shadow-green-500/20 transition-all duration-200"
+              >
+                Start 14-day free trial <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/contact-us"
+                className="inline-flex items-center gap-2 h-14 px-8 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl text-base border border-white/20 transition-all duration-200"
+              >
+                Talk to founder
+              </Link>
+            </div>
+            <p className="text-xs text-gray-600 tracking-widest uppercase">
+              No credit card required · Cancel anytime · Full white-label · BYOK included
+            </p>
           </div>
         </Container>
       </section>
