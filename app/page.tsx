@@ -13,7 +13,7 @@ import { FinalCTA } from "@/components/home/FinalCTA";
 import Script from "next/script";
 
 export default function HomePage() {
-  redirect('/products/publisher-widgets')
+  //redirect('/products/publisher-widgets')
 
   return (
     <div className="min-h-screen">
