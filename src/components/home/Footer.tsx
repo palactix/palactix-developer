@@ -15,9 +15,9 @@ import { Logo } from "@/shared/Logo";
 
 const footerLinks = {
   products: [
-    { href: "/product/white-label-scheduler", label: "White-label Scheduler" },
-    { href: "/product/unified-social-apis", label: "Unified Social APIs" },
-    { href: "/product/publisher-widgets", label: "Publisher Widgets" },
+    { href: "/products/white-label-scheduler", label: "White-label Scheduler" },
+    { href: "/products/unified-social-apis", label: "Unified Social APIs" },
+    { href: "/products/publisher-widgets", label: "Publisher Widgets" },
     { href: "/pricing", label: "Pricing" },
   ],
   resources: [
@@ -25,6 +25,7 @@ const footerLinks = {
     { href: "/developer", label: "API Reference" },
     { href: "/blog", label: "Blog" },
     { href: "/tools/savings-calculator", label: "Savings Calculator" },
+    { href: "/tools/publish-widget-demo", label: "Publisher Widget Demo" },
     
   ],
   company: [

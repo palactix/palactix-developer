@@ -269,12 +269,12 @@ export default function WidgetPageClient() {
               >
                 Install npm package <ArrowRight className="w-4 h-4" />
               </Link>
-              <button
-                onClick={() => setDemoOpen(true)}
+              <Link
+                href="/tools/publish-widget-demo"
                 className="inline-flex items-center gap-2 h-12 px-7 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl text-base border border-white/20 transition-all duration-200"
               >
                 See live demo
-              </button>
+              </Link>
               <Link
                 href="/contact-us"
                 className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-base font-medium transition-colors duration-200"
