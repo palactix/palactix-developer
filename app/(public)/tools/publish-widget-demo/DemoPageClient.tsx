@@ -94,7 +94,7 @@ export default function DemoPageClient() {
   const captionRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
 
-  const sectionRefs: Record<DemoType, React.RefObject<HTMLDivElement>> = {
+  const sectionRefs: Record<DemoType, React.RefObject<HTMLDivElement | null>> = {
     basic: basicRef,
     caption: captionRef,
     media: mediaRef,
