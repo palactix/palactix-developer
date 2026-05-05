@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
@@ -9,6 +10,7 @@ import { useMe } from "@/features/auth/auth.hooks";
 export const DeveloperLayout = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, error, data: user } = useMe();
   const [isMobileOpen, setMobileOpen] = useState(false);
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -19,6 +21,12 @@ export const DeveloperLayout = ({ children }: { children: React.ReactNode }) => 
   }
 
   if (error || !user) {
+    return null;
+  }
+
+  // Only developers and agency owners can access the developer portal
+  if (user.signup_type !== "developer" && user.signup_type !== "agency") {
+    router.replace("/auth/login");
     return null;
   }
 

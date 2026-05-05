@@ -19,10 +19,8 @@ export default function DashboardPage() {
 
   if(user) {
     const { signup_type } = user;
-    if(signup_type === "developer") {
+    if(signup_type === "developer" || signup_type === "agency") {
       router.replace("/developer/apps");
-    } else if (signup_type === "agency") {
-      router.replace("/agency/overview");
     } else {
       notify.error("Unknown user type. Please contact support.");
       router.replace("/auth/login");

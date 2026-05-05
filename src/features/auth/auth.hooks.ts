@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AuthError } from "@/lib/errors";
-import { getMe } from "./auth.api";
+import { getMe, logout } from "./auth.api";
 import { loginRoute } from "./login";
 
 export const useMe = () => {
@@ -35,13 +35,32 @@ export const useMe = () => {
 
   useEffect(() => {
     if(query.data ) {
-      const { developer } = query.data;
+      const { developer, signup_type } = query.data;
 
-      if(!developer?.has_apps && pathname !== "/developer/onboarding") { 
+      // Agency owners skip the developer onboarding flow — they may not have apps yet
+      if(signup_type !== "agency" && !developer?.has_apps && pathname !== "/developer/onboarding") {
         router.replace("/developer/onboarding");
       }
     }
   }, [query.data, pathname, router]);
 
   return query;
+};
+
+export const useLogout = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    try {
+      await logout();
+    } finally {
+      queryClient.clear();
+      router.replace(loginRoute);
+    }
+  };
+
+  return { handleLogout, isLoading };
 };

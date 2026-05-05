@@ -2,6 +2,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  signup_type: "developer" | "agency" | null;
   avatar_url: string | null;
   developer?: {
     has_apps: boolean;

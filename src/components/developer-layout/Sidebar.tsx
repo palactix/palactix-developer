@@ -21,6 +21,7 @@ import { AppSwitcher } from "./AppSwitcher";
 import { NavigationGroup } from "./NavigationGroup";
 import Link from "next/link";
 import { AuthUser } from "@/features/auth/auth.types";
+import { useLogout } from "@/features/auth/auth.hooks";
 
 const GLOBAL_NAV = [
   { name: "All Apps", href: "/developer/apps", icon: Grid, exact: true },
@@ -42,6 +43,7 @@ export const Sidebar = ({
   const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
   const appId = params?.appId;
+  const { handleLogout, isLoading: isLoggingOut } = useLogout();
 
   const appNav = [
     { name: "Dashboard", href: appId ? `/developer/apps/${appId}` : "/developer/apps", icon: LayoutDashboard },
@@ -141,10 +143,12 @@ export const Sidebar = ({
         </button>
 
         <button
-          className="flex items-center w-full px-2 py-2 gap-3 text-sm text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center w-full px-2 py-2 gap-3 text-sm text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <LogOut className="w-4 h-4 shrink-0 transition-colors" />
-          {!isCollapsed && <span className="truncate font-medium">Log out</span>}
+          {!isCollapsed && <span className="truncate font-medium">{isLoggingOut ? "Logging out…" : "Log out"}</span>}
         </button>
       </div>
     </div>
