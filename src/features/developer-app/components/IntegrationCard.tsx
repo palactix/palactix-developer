@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PlatformLogo } from "@/features/platform/platform.logo";
@@ -25,6 +25,17 @@ export const IntegrationCard = ({ appId, integration, onEdit }: IntegrationCardP
   const queryClient = useQueryClient();
   const { mutateAsync: getVerifyUrl, isPending: isVerifying } = useVerifyIntegration();
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.data?.type === "oauth2") {
+        if (pollRef.current) clearInterval(pollRef.current);
+        queryClient.invalidateQueries({ queryKey: ["app", appId] });
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [appId, queryClient]);
 
   const handleVerify = useCallback(async () => {
     try {
