@@ -1,3 +1,11 @@
+export interface AuthUserWorkspace {
+  id: string;
+  name: string;
+  username: string | null;
+  logo: string | null;
+  app_id: string | null;
+}
+
 export interface AuthUser {
   id: string;
   name: string;
@@ -8,6 +16,7 @@ export interface AuthUser {
     has_apps: boolean;
     apps_count: number;
   };
+  workspaces?: AuthUserWorkspace[];
 }
 
 export interface MeResponse {

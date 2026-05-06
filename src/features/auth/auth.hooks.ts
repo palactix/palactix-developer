@@ -34,11 +34,20 @@ export const useMe = () => {
   }, [query.error, pathname, router]);
 
   useEffect(() => {
-    if(query.data ) {
-      const { developer, signup_type } = query.data;
+    if(query.data) {
+      const { developer, signup_type, workspaces } = query.data;
 
-      // Agency owners skip the developer onboarding flow — they may not have apps yet
-      if(signup_type !== "agency" && !developer?.has_apps && pathname !== "/developer/onboarding") {
+      if (signup_type === "agency") {
+        // Agency owners must complete their workspace onboarding before accessing the portal.
+        // A workspace with no username means Step 3 (subdomain) was never finished.
+        const incompleteWorkspace = workspaces?.find((ws) => !ws.username);
+        if (incompleteWorkspace?.app_id && !pathname.startsWith("/agency/onboarding")) {
+          router.replace(`/agency/onboarding/${incompleteWorkspace.app_id}`);
+        }
+        return;
+      }
+
+      if (!developer?.has_apps && pathname !== "/developer/onboarding") {
         router.replace("/developer/onboarding");
       }
     }
