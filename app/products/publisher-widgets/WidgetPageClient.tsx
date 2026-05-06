@@ -312,7 +312,7 @@ export default function WidgetPageClient() {
             {[
               { value: "6",     label: "Social platforms" },
               { value: "1 hr",  label: "Avg. setup time" },
-              { value: "$99",   label: "Per month flat" },
+              { value: "$50",   label: "Per month flat" },
               { value: "0",     label: "Palactix branding" },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
@@ -727,7 +727,7 @@ export default function WidgetPageClient() {
                 {/* Left: price + trial badge */}
                 <div className="p-10">
                   <div className="flex items-end gap-1.5 mb-2">
-                    <span className="text-6xl font-black text-gray-900 tracking-tight">$99</span>
+                    <span className="text-6xl font-black text-gray-900 tracking-tight">$50</span>
                     <span className="text-xl text-gray-400 mb-2">/month</span>
                   </div>
                   <p className="text-sm text-gray-500 mb-6">
@@ -831,7 +831,7 @@ export default function WidgetPageClient() {
                 ["When you leave",   "Re-auth all users", "Keep all connections"],
                 ["Rate limits",      "Shared pool",       "Your own limits"],
                 ["Platform bans",    "Everyone affected", "Only you affected"],
-                ["White-label cost", "$500–1,000/mo",     "Included at $99/mo"],
+                ["White-label cost", "$500–1,000/mo",     "Included at $50/mo"],
               ].map(([label, other, ours], i) => (
                 <div
                   key={i}
