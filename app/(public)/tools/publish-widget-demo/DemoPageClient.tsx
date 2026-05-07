@@ -8,6 +8,7 @@ import {
   UserPlus, KeyRound, Rocket, Code2, Zap,
   FileText, MonitorPlay, ImageIcon,
 } from 'lucide-react';
+import { init as PalactixWidget } from '@palactix/publisher-widget';
 
 type DemoType = 'basic' | 'caption' | 'media';
 type Framework = 'vanilla' | 'react' | 'vue' | 'node' | 'php' | 'python';
@@ -83,7 +84,7 @@ function CodeBlock({ code }: { code: string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function DemoPageClient() {
+export default function DemoPageClient({wtoken}: {wtoken: string}) {
   const [activeSection, setActiveSection] = useState<DemoType>('basic');
   const [activeFramework, setActiveFramework] = useState<Framework>('vanilla');
   const [caption, setCaption] = useState('Check out our latest update!');
@@ -139,25 +140,17 @@ export default function DemoPageClient() {
 
   // Load widget script
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@palactix/publisher-widget@latest/dist/iife/loader.min.js';
-    script.async = true;
-    script.onload = () => {
-      fetchDemoToken().then((demoToken) => {
-        // @ts-ignore
-        widgetRef.current = window.PalactixWidget.init({
-          token: demoToken,
-          mode: 'modal',
-          primary: '#10b981',
-          onPublished: (post: any) => {
-            console.log('Published:', post);
-            alert('Post published successfully! Check console for details.');
-          },
-          onClose: () => { console.log('Widget closed'); },
-        });
-      });
-    };
-    document.body.appendChild(script);
+    widgetRef.current = PalactixWidget({
+      token: wtoken,
+      mode: 'modal',
+      primary: '#10b981',
+      onPublished: (post: any) => {
+        console.log('Published:', post);
+        //alert('Post published successfully! Check console for details.');
+      },
+      onClose: () => { console.log('Widget closed'); },
+    });
+    
     return () => { if (widgetRef.current) { widgetRef.current.destroy(); } };
   }, []);
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import DemoPageClient from "./DemoPageClient";
+import { apiClient } from "@/lib/api-client";
 
 export const metadata: Metadata = {
   title: "Publisher Widget Live Demo — Try It Now | Palactix",
@@ -41,14 +42,36 @@ const breadcrumbSchema = {
   ],
 };
 
-export default function PublishWidgetDemoPage() {
+export default async function PublishWidgetDemoPage() {
+
+  const externalUserId = "wd_demo_user_0001";
+  const basic = Buffer.from(
+    `${process.env.PALACTIX_PUBLISHER_WIDGET_ID}:${process.env.PALACTIX_PUBLISHER_WIDGET_SECRET}`
+  ).toString('base64');
+
+  const response = await fetch(`https://api.palactix.com/widget/tokens`, {
+    "method": "POST",
+    "headers": {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${basic}`,
+      'Accept': 'application/json',
+    },
+    "body": JSON.stringify({
+      external_user_id: externalUserId,
+      ttl: 300,                       
+    }),
+  })
+  const {init_token} = await response.json();
+  console.log(init_token);
+
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <DemoPageClient />
+      <DemoPageClient wtoken={init_token} />
     </>
   );
 }

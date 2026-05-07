@@ -79,6 +79,7 @@ export const apiClient = async <T>(path: string, options: ApiClientOptions = {})
 
   try {
     const requestHeaders = createHeaders(headers);
+    console.log({requestHeaders});
 
     if (restOptions.body && !(restOptions.body instanceof FormData) && !requestHeaders.has("Content-Type")) {
       requestHeaders.set("Content-Type", "application/json");
@@ -90,7 +91,7 @@ export const apiClient = async <T>(path: string, options: ApiClientOptions = {})
       credentials: "include",
       signal: controller.signal,
     });
-
+    console.log(response);
     const payload = await parseResponseBody(response);
     if (!response.ok) {
       if (response.status === 401) {
