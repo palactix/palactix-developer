@@ -146,11 +146,10 @@ export default function DemoPageClient({wtoken}: {wtoken: string}) {
       primary: '#10b981',
       onPublished: (post: any) => {
         console.log('Published:', post);
-        //alert('Post published successfully! Check console for details.');
       },
       onClose: () => { console.log('Widget closed'); },
     });
-    
+
     return () => { if (widgetRef.current) { widgetRef.current.destroy(); } };
   }, []);
 
