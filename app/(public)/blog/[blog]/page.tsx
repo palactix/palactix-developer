@@ -38,6 +38,9 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       description: blog.seo_description ?? undefined,
       keywords: blog.tags.join(", "),
       authors: [{ name: blog.author_name }],
+      alternates: {
+        canonical: `/blog/${resolvedParams.blog}`,
+      },
       openGraph: {
         title: blog.title,
         description: blog.seo_description ?? undefined,

@@ -13,6 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://palactix.com"),
   title: "Palactix - White-Label Social Publishing Platform for Agencies",
   description: "Run your own white-label social publishing platform by using your agency’s own app credentials for client publishing across major social platforms.",
 
