@@ -26,8 +26,8 @@ export default function HomePage() {
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Palactix",
-            url: "https://www.palactix.com",
-            logo: "https://www.palactix.com/logo.png",
+            url: "https://palactix.com",
+            logo: "https://palactix.com/logo.png",
             description:
               "Palactix is an agency-first, white-label social publishing platform that allows agencies to publish client content using their own app credentials.",
             sameAs: [
@@ -47,7 +47,7 @@ export default function HomePage() {
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Palactix",
-            url: "https://www.palactix.com",
+            url: "https://palactix.com",
           }),
         }}
       />

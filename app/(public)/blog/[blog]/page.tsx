@@ -86,7 +86,7 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
     categories = [];
   }
 
-  const blogUrl = `https://www.palactix.com/blog/${slug}`;
+  const blogUrl = `https://palactix.com/blog/${slug}`;
   const keywords = blog.tags?.length ? blog.tags : blog.seo_keywords || [];
 
   return (
@@ -113,13 +113,13 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://www.palactix.com/",
+                item: "https://palactix.com/",
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Blog",
-                item: "https://www.palactix.com/blog",
+                item: "https://palactix.com/blog",
               },
               {
                 "@type": "ListItem",

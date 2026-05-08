@@ -28,11 +28,11 @@ export const metadata: Metadata = {
     title: "Palactix",
     description:
       "Social Publishing Built for Agencies Using Their Own Apps.",
-    url: "https://www.palactix.com",
+    url: "https://palactix.com",
     siteName: "Palactix",
     images: [
       {
-        url: "https://www.palactix.com/images/social-preview.png",
+        url: "https://palactix.com/images/social-preview.png",
         width: 1200,
         height: 630,
         alt: "Palactix — Social Publishing Built for Agencies Using Their Own Apps",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "Palactix",
     description:
       "Social Publishing Built for Agencies Using Their Own Apps.",
-    images: ["https://www.palactix.com/images/social-preview.png"],
+    images: ["https://palactix.com/images/social-preview.png"],
   },
   robots: {
     index: true,

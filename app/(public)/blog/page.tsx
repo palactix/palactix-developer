@@ -61,7 +61,7 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
   const listItems = (featured ? [featured, ...remainingBlogs] : blogs).map((post, index) => ({
     "@type": "ListItem",
     position: index + 1,
-    url: `https://www.palactix.com/blog/${post.slug}`,
+    url: `https://palactix.com/blog/${post.slug}`,
     name: post.title,
   }));
 
@@ -81,13 +81,13 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
                   "@type": "ListItem",
                   position: 1,
                   name: "Home",
-                  item: "https://www.palactix.com/",
+                  item: "https://palactix.com/",
                 },
                 {
                   "@type": "ListItem",
                   position: 2,
                   name: "Blog",
-                  item: "https://www.palactix.com/blog",
+                  item: "https://palactix.com/blog",
                 },
               ],
             }),

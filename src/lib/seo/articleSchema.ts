@@ -22,7 +22,7 @@ export function generateArticleSchema(blog: BlogPost, url: string) {
       "name": "Palactix",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.palactix.com/images/p-logo.svg",
+        "url": "https://palactix.com/images/p-logo.svg",
       },
     },
     "mainEntityOfPage": {
