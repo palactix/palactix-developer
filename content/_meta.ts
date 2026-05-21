@@ -6,6 +6,7 @@ const meta = {
    "connections": "Connections",
    "api-reference": "API Reference",
    "publisher-widget": "Publisher Widget",
+   "webhooks": "Webhooks",
    "coming-soon": "Coming Soon"
 }
 

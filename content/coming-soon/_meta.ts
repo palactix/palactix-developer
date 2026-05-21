@@ -1,6 +1,5 @@
 export default {
   "scheduling-api": "Scheduling API",
-  webhooks: "Webhooks",
   "bulk-operations": "Bulk Operations",
   "analytics-and-insights": "Analytics & Insights",
   "workflow-automation": "Workflow Automation",

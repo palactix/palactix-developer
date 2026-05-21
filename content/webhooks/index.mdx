@@ -1,0 +1,256 @@
+---
+title: Webhooks
+description: Receive real-time HTTP notifications when events happen in your Palactix app.
+---
+
+# Webhooks
+
+Webhooks let your server receive an HTTP `POST` request the moment something important happens inside your app — a post publishes successfully, or a publish attempt fails.
+
+Instead of polling the API, you register an endpoint once and Palactix calls it automatically.
+
+---
+
+## How It Works
+
+1. You register one or more HTTPS endpoint URLs in the **Developer Portal → your app → Webhooks**.
+2. For each endpoint you choose which events to subscribe to.
+3. When a subscribed event fires, Palactix sends a signed `POST` request to your URL with a JSON body.
+4. Your server responds with any `2xx` status to acknowledge receipt.
+5. If delivery fails, Palactix retries up to **3 times** with exponential backoff (30 s → 90 s → 270 s).
+
+---
+
+## Setting Up an Endpoint
+
+1. Open **Developer Portal → Apps → [your app] → Webhooks**.
+2. Click **Add Endpoint**.
+3. Enter your HTTPS URL, select the events you want, and optionally add a description.
+4. Click **Add Endpoint** — your **signing secret** is shown **once**. Copy it immediately.
+
+> You can register up to **10 webhook endpoints** per app.
+
+---
+
+## Signing Secret
+
+Every endpoint has a unique signing secret (`whsec_…`).
+
+Palactix uses it to sign every request with an HMAC-SHA256 signature sent in the `X-Palactix-Signature` header.
+
+**You must verify this signature on your server** before trusting the payload.
+
+```
+X-Palactix-Signature: sha256=<hmac-sha256 of the raw request body>
+```
+
+The secret is shown only once when you create the endpoint. If you lose it, rotate it from the **Webhooks** settings panel — the old secret is immediately invalidated.
+
+---
+
+## Verifying the Signature
+
+Compute the HMAC-SHA256 of the **raw request body** (not parsed JSON) using your secret, then compare it to the value in `X-Palactix-Signature`.
+
+### Node.js
+
+```javascript
+import crypto from "crypto";
+
+function verifyWebhook(req, secret) {
+  const signature = req.headers["x-palactix-signature"];
+  const expected = "sha256=" + crypto
+    .createHmac("sha256", secret)
+    .update(req.rawBody) // must be the raw Buffer, not parsed JSON
+    .digest("hex");
+
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+}
+```
+
+### Python
+
+```python
+import hashlib
+import hmac
+
+def verify_webhook(body: bytes, secret: str, signature: str) -> bool:
+    expected = "sha256=" + hmac.new(
+        secret.encode(), body, hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+```
+
+### PHP
+
+```php
+function verifyWebhook(string $rawBody, string $secret, string $signature): bool
+{
+    $expected = 'sha256=' . hash_hmac('sha256', $rawBody, $secret);
+    return hash_equals($expected, $signature);
+}
+```
+
+> Always use a timing-safe comparison (`timingSafeEqual` / `compare_digest` / `hash_equals`) to prevent timing attacks.
+
+---
+
+## Request Headers
+
+Every webhook delivery includes these headers:
+
+| Header | Description |
+|---|---|
+| `Content-Type` | `application/json` |
+| `X-Palactix-Event` | The event type (e.g. `post.publish.succeeded`) |
+| `X-Palactix-Signature` | HMAC-SHA256 signature of the body |
+| `X-Palactix-Delivery` | Unique delivery ID for this attempt |
+
+---
+
+## Events
+
+### `post.publish.succeeded`
+
+Fired when a platform post is successfully published.
+
+```json
+{
+  "event": "post.publish.succeeded",
+  "app_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+  "timestamp": "2026-05-18T10:00:00Z",
+  "data": {
+    "post_id": "019d2a1d-5aea-7208-9026-3c61a657aaf6",
+    "platform_post_id": "1234567890123456789",
+    "platform_id": 1,
+    "account_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+    "app_user_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+    "published_at": "2026-05-18T10:00:00Z"
+  }
+}
+```
+
+### `post.publish.failed`
+
+Fired when all publish attempts for a platform post are exhausted.
+
+```json
+{
+  "event": "post.publish.failed",
+  "app_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+  "timestamp": "2026-05-18T10:00:00Z",
+  "data": {
+    "post_id": "019d2a1d-5aea-7208-9026-3c61a657aaf6",
+    "platform_id": 1,
+    "account_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+    "app_user_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+    "error_code": "PLATFORM_AUTH_ERROR",
+    "error_message": "The access token has expired."
+  }
+}
+```
+
+### `test`
+
+Sent when you click **Send Test** in the portal. Useful for verifying your endpoint is reachable.
+
+```json
+{
+  "event": "test",
+  "app_id": "019ce4b8-57d1-70a6-b0dd-79c6fb99d2d9",
+  "timestamp": "2026-05-18T10:00:00Z",
+  "data": {
+    "message": "This is a test webhook delivery from Palactix."
+  }
+}
+```
+
+---
+
+## Payload Reference
+
+All webhook payloads share a common envelope:
+
+| Field | Type | Description |
+|---|---|---|
+| `event` | string | Event type slug |
+| `app_id` | string (UUID) | Your developer app ID |
+| `timestamp` | string (ISO 8601) | When the event occurred |
+| `data` | object | Event-specific data (see each event above) |
+
+---
+
+## Delivery & Retries
+
+| Behaviour | Detail |
+|---|---|
+| Timeout | 10 seconds per attempt |
+| Success | Any `2xx` HTTP status |
+| Retry on | Non-`2xx` response or connection error |
+| Retry schedule | 30 s → 90 s → 270 s (3 attempts total) |
+| Final failure | Delivery marked `failed` after all retries exhausted |
+| Log retention | Delivery logs are kept for **30 days** |
+
+Palactix does **not** retry on `4xx` errors — fix your endpoint and use **Send Test** to re-verify.
+
+---
+
+## Delivery Log
+
+The portal shows a delivery log for each endpoint (last 30 days):
+
+- **Status** — `delivered`, `failed`, or `pending`
+- **HTTP status** — the response code your server returned
+- **Attempt count** — how many times Palactix tried
+- **Payload** — the exact JSON body that was sent
+- **Response body** — the first 2 KB of your server's response
+
+Use this to debug failed deliveries without needing to check your own logs.
+
+---
+
+## Testing Your Endpoint
+
+Click **Send Test** next to any endpoint in the portal. Palactix queues a synthetic `test` event delivery immediately — check the delivery log after a few seconds to see the result.
+
+---
+
+## Rotating the Secret
+
+If your secret is compromised:
+
+1. Open **Webhooks → [endpoint] → Rotate**.
+2. Confirm the rotation.
+3. The new secret is shown once — copy it.
+4. Update your server with the new secret.
+
+The old secret is **immediately invalidated**. Any requests signed with it will fail your signature check.
+
+---
+
+## Managing Endpoints
+
+Each endpoint can be:
+
+- **Enabled / Disabled** — toggle without deleting. Disabled endpoints receive no deliveries.
+- **Edited** — change the URL, events, or description.
+- **Deleted** — permanent. All associated delivery history is also deleted.
+
+---
+
+## Endpoint Limits
+
+Each developer app can have a maximum of **10 webhook endpoints**.
+
+---
+
+## Security Checklist
+
+- Always verify `X-Palactix-Signature` before processing the payload.
+- Use a timing-safe comparison function.
+- Respond within 10 seconds — offload heavy processing to a background queue.
+- Use HTTPS. HTTP endpoints will be rejected.
+- Rotate your secret immediately if it is leaked.
